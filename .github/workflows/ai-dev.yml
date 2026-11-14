@@ -1,0 +1,63 @@
+name: AI Game Dev Loop
+
+on:
+  workflow_dispatch:
+    inputs:
+      iteration:
+        description: "イテレーション番号(1=新規開発、2以降=バグ修正)"
+        default: "1"
+        type: string
+      max_iterations:
+        description: "最大イテレーション数(この回数でループ停止)"
+        default: "10"
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: ai-game-dev-loop
+  cancel-in-progress: false
+
+jobs:
+  run-ai:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ITERATION: ${{ inputs.iteration }}
+      MAX_ITERATIONS: ${{ inputs.max_iterations }}
+      UNCLOSE_BASE: ${{ vars.UNCLOSE_BASE || 'https://hermes.ai.unturf.com/v1' }}
+      UNCLOSE_MODEL: ${{ vars.UNCLOSE_MODEL || '' }}
+      UNCLOSE_API_KEY: ${{ secrets.UNCLOSE_API_KEY || 'permacomputer' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run UncloseAI agent
+        run: python3 scripts/agent.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "uncloseai-bot"
+          git config user.email "uncloseai-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "変更がなかったためコミットをスキップします"
+          else
+            git commit -m "ai-dev: iteration ${ITERATION}"
+            git push
+          fi
+
+      - name: Launch next process, then finish this one
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NEXT=$((ITERATION + 1))
+          if [ "$NEXT" -le "$MAX_ITERATIONS" ]; then
+            gh workflow run ai-dev.yml --ref main -f iteration="$NEXT" -f max_iterations="$MAX_ITERATIONS"
+            echo "次のプロセス(イテレーション ${NEXT})を起動しました。現在のプロセスを終了します。"
+          else
+            echo "最大イテレーション数 ${MAX_ITERATIONS} に到達したため、ループを終了します。"
+          fi
