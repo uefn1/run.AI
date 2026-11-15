@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""UncloseAI agent for the self-chaining GitHub Actions game-dev loop.
+"""AI agent for the self-chaining GitHub Actions game-dev loop.
 
 Iteration 1: read prompt.txt and implement the game from scratch.
 Iteration 2+: read prompt.txt + DEVLOG.md + the previous commit, find and fix bugs.
 
-Talks to any OpenAI-compatible chat endpoint (default: uncloseai.com /
-hermes.ai.unturf.com) using a JSON-in-text ReAct protocol, stdlib only.
+Talks to any OpenAI-compatible chat endpoint (default: Google AI Studio's
+gemma-4-26b-a4b-it via the Gemini API) using a JSON-in-text ReAct protocol,
+stdlib only.
 """
 
 import json
@@ -19,13 +20,15 @@ import urllib.request
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-BASE = os.environ.get("UNCLOSE_BASE", "https://hermes.ai.unturf.com/v1").rstrip("/")
-API_KEY = os.environ.get("UNCLOSE_API_KEY", "permacomputer")
-MODEL = os.environ.get("UNCLOSE_MODEL", "")
-MAX_TURNS = int(os.environ.get("UNCLOSE_MAX_TURNS", "60"))
-MAX_RESULT = int(os.environ.get("UNCLOSE_MAX_RESULT", "12000"))
+BASE = os.environ.get(
+    "LLM_BASE", "https://generativelanguage.googleapis.com/v1beta/openai"
+).rstrip("/")
+API_KEY = os.environ.get("LLM_API_KEY", "")
+MODEL = os.environ.get("LLM_MODEL", "gemma-4-26b-a4b-it")
+MAX_TURNS = int(os.environ.get("LLM_MAX_TURNS", "60"))
+MAX_RESULT = int(os.environ.get("LLM_MAX_RESULT", "12000"))
 ITERATION = int(os.environ.get("ITERATION", "1"))
-REQUEST_INTERVAL = float(os.environ.get("UNCLOSE_REQUEST_INTERVAL", "2"))
+REQUEST_INTERVAL = float(os.environ.get("LLM_REQUEST_INTERVAL", "2"))
 
 SYSTEM_PROMPT = """あなたはリポジトリ内で自律的に作業するゲーム開発エージェントです。
 
@@ -76,9 +79,8 @@ def http_json(method: str, url: str, payload=None):
             if e.code == 401:
                 sys.exit(
                     f"ERROR 401 from {url}: {body}\n"
-                    "UncloseAI の公開ベータは現在クローズ中の可能性があります。\n"
-                    "シークレット UNCLOSE_API_KEY に有効なキーを設定するか、\n"
-                    "vars.UNCLOSE_BASE をセルフホスト等の OpenAI 互換エンドポイントに向けてください。"
+                    "APIキーが無効です。シークレット GEMINI_API_KEY に\n"
+                    "Google AI Studio (https://aistudio.google.com/apikey) の API キーを設定してください。"
                 )
             if e.code >= 500:
                 time.sleep(5 * (attempt + 1))
@@ -294,6 +296,12 @@ def build_task() -> str:
 # ---------------------------------------------------------------- main loop
 
 def main() -> int:
+    if not API_KEY:
+        sys.exit(
+            "ERROR: LLM_API_KEY is empty.\n"
+            "リポジトリの Settings > Secrets and variables > Actions で\n"
+            "シークレット GEMINI_API_KEY を設定してから再実行してください。"
+        )
     model = discover_model()
     task = build_task()
     print(f"iteration {ITERATION} | base={BASE} | model={model}", flush=True)

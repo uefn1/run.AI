@@ -27,21 +27,21 @@ jobs:
     env:
       ITERATION: ${{ inputs.iteration }}
       MAX_ITERATIONS: ${{ inputs.max_iterations }}
-      UNCLOSE_BASE: ${{ vars.UNCLOSE_BASE || 'https://hermes.ai.unturf.com/v1' }}
-      UNCLOSE_MODEL: ${{ vars.UNCLOSE_MODEL || '' }}
-      UNCLOSE_API_KEY: ${{ secrets.UNCLOSE_API_KEY || 'permacomputer' }}
+      LLM_BASE: ${{ vars.LLM_BASE || 'https://generativelanguage.googleapis.com/v1beta/openai' }}
+      LLM_MODEL: ${{ vars.LLM_MODEL || 'gemma-4-26b-a4b-it' }}
+      LLM_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.UNCLOSE_API_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Run UncloseAI agent
+      - name: Run AI agent (Gemma 4 26B via Google AI Studio)
         run: python3 scripts/agent.py
 
       - name: Commit and push
         run: |
-          git config user.name "uncloseai-bot"
-          git config user.email "uncloseai-bot@users.noreply.github.com"
+          git config user.name "ai-dev-bot"
+          git config user.email "ai-dev-bot@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then
             echo "変更がなかったためコミットをスキップします"
