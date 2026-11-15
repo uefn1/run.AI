@@ -5,7 +5,7 @@ Iteration 1: read prompt.txt and implement the game from scratch.
 Iteration 2+: read prompt.txt + DEVLOG.md + the previous commit, find and fix bugs.
 
 Talks to any OpenAI-compatible chat endpoint (default: Google AI Studio's
-gemma-4-26b-a4b-it via the Gemini API) using a JSON-in-text ReAct protocol,
+gemma-4-31b-it via the Gemini API) using a JSON-in-text ReAct protocol,
 stdlib only.
 """
 
@@ -24,7 +24,7 @@ BASE = os.environ.get(
     "LLM_BASE", "https://generativelanguage.googleapis.com/v1beta/openai"
 ).rstrip("/")
 API_KEY = os.environ.get("LLM_API_KEY", "")
-MODEL = os.environ.get("LLM_MODEL", "gemma-4-26b-a4b-it")
+MODEL = os.environ.get("LLM_MODEL", "gemma-4-31b-it")
 MAX_TURNS = int(os.environ.get("LLM_MAX_TURNS", "60"))
 MAX_RESULT = int(os.environ.get("LLM_MAX_RESULT", "12000"))
 ITERATION = int(os.environ.get("ITERATION", "1"))

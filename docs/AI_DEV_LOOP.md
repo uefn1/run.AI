@@ -1,6 +1,6 @@
 # AI開発ループの使い方
 
-GitHub Actions 上で Google AI Studio の **Gemma 4 26B**(`gemma-4-26b-a4b-it`)が自律的にゲーム開発を行う自己連鎖型ワークフローです。
+GitHub Actions 上で Google AI Studio の **Gemma 4 31B**(`gemma-4-31b-it`)が自律的にゲーム開発を行う自己連鎖型ワークフローです。
 
 ## 仕組み
 
@@ -56,7 +56,7 @@ GitHub Actions 上で Google AI Studio の **Gemma 4 26B**(`gemma-4-26b-a4b-it`)
 | --- | --- | --- | --- |
 | Secret | `GEMINI_API_KEY` | (必須) | Google AI Studio の API キー |
 | Variable | `LLM_BASE` | `https://generativelanguage.googleapis.com/v1beta/openai` | OpenAI 互換 API のベース URL |
-| Variable | `LLM_MODEL` | `gemma-4-26b-a4b-it` | モデル ID |
+| Variable | `LLM_MODEL` | `gemma-4-31b-it` | モデル ID |
 
 ## モデルやエンドポイントの変更
 
@@ -64,7 +64,7 @@ GitHub Actions 上で Google AI Studio の **Gemma 4 26B**(`gemma-4-26b-a4b-it`)
 `scripts/agent.py` は OpenAI 互換の chat/completions に標準ライブラリのみで接続するため、
 Gemini API だけでなくローカル llama-server / vLLM / OpenRouter などでも無変更で動作します。
 
-- Gemma 4 31B: `LLM_MODEL` を `gemma-4-31b-it` に変更
+- Gemma 4 26B(MoE、高速): `LLM_MODEL` を `gemma-4-26b-a4b-it` に変更
 - OpenRouter 経由: `LLM_BASE` を `https://openrouter.ai/api/v1`、`LLM_MODEL` を `google/gemma-4-26b-a4b-it:free` に変更(キーは `GEMINI_API_KEY` の代わりに OpenRouter のキーを登録)
 
 ## 動作要件

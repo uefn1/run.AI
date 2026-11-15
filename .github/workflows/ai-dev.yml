@@ -28,14 +28,14 @@ jobs:
       ITERATION: ${{ inputs.iteration }}
       MAX_ITERATIONS: ${{ inputs.max_iterations }}
       LLM_BASE: ${{ vars.LLM_BASE || 'https://generativelanguage.googleapis.com/v1beta/openai' }}
-      LLM_MODEL: ${{ vars.LLM_MODEL || 'gemma-4-26b-a4b-it' }}
+      LLM_MODEL: ${{ vars.LLM_MODEL || 'gemma-4-31b-it' }}
       LLM_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.UNCLOSE_API_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Run AI agent (Gemma 4 26B via Google AI Studio)
+      - name: Run AI agent (Gemma 4 31B via Google AI Studio)
         run: python3 scripts/agent.py
 
       - name: Commit and push
