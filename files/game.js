@@ -73,14 +73,19 @@ function handleCellClick(r, c) {
         renderBoard();
         
         if (canMove(board, WHITE)) {
-            isAiThinking = true;
-            boardEl.style.pointerEvents = 'none';
-            turnIndicator.textContent = "AIが思考中...";
-            setTimeout(aiMove, 400);
+            startAiTurn();
         } else {
             checkPass(WHITE);
         }
     }
+}
+
+function startAiTurn() {
+    isAiThinking = true;
+    boardEl.style.pointerEvents = 'none';
+    turnIndicator.textContent = "AIが思考中...";
+    renderBoard(); // 消去してヒントをなくす
+    setTimeout(aiMove, 400);
 }
 
 function aiMove() {
@@ -110,10 +115,7 @@ function checkPass(player) {
         updateStatus();
         renderBoard();
         if (currentPlayer === WHITE) {
-            isAiThinking = true;
-            boardEl.style.pointerEvents = 'none';
-            turnIndicator.textContent = "AIが思考中...";
-            setTimeout(aiMove, 400);
+            startAiTurn();
         } else {
             boardEl.style.pointerEvents = 'auto';
         }
