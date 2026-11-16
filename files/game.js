@@ -68,7 +68,7 @@ function handleCellClick(r, c) {
     if (currentPlayer !== BLACK || isAiThinking) return;
 
     if (makeMove(board, r, c, BLACK)) {
-        messageEl.textContent = ''; // Clear pass message when player moves
+        messageEl.textContent = '';
         currentPlayer = WHITE;
         updateStatus();
         renderBoard();
@@ -190,7 +190,7 @@ function getBestMove(board, player) {
     if (moves.length === 0) return null;
     
     const totalPieces = board.flat().filter(p => p !== EMPTY).length;
-    const depth = totalPieces > 40 ? 6 : 4; // Increase depth in late game
+    const depth = totalPieces > 40 ? 6 : 4;
 
     let bestScore = -Infinity, bestMove = moves[0];
     for (let move of moves) {
