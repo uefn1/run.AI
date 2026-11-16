@@ -84,7 +84,7 @@ function startAiTurn() {
     isAiThinking = true;
     boardEl.style.pointerEvents = 'none';
     turnIndicator.textContent = "AIが思考中...";
-    renderBoard(); // 消去してヒントをなくす
+    renderBoard();
     setTimeout(aiMove, 400);
 }
 
