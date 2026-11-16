@@ -28,10 +28,14 @@ def generate(
     system_instruction: str | None = None,
     thinking_level: str = "minimal",
     model: str = MODEL_ID,
-    max_attempts: int = 6,
+    max_attempts: int | None = None,
 ) -> str:
+    """Call the API, retrying 429/5xx forever by default (TPM is small; wait it out)."""
     client = get_client()
-    for attempt in range(1, max_attempts + 1):
+    wait = 5.0
+    attempt = 0
+    while True:
+        attempt += 1
         try:
             response = client.models.generate_content(
                 model=model,
@@ -43,16 +47,17 @@ def generate(
             )
             return response.text
         except errors.APIError as e:
-            if e.code not in RETRYABLE_STATUS or attempt == max_attempts:
+            if e.code not in RETRYABLE_STATUS:
                 raise
-            wait = min(60.0, 5.0 * 2 ** (attempt - 1))
+            if max_attempts is not None and attempt >= max_attempts:
+                raise
             print(
-                f"API error {e.code} (attempt {attempt}/{max_attempts}), "
+                f"API error {e.code} (attempt {attempt}), "
                 f"retrying in {wait:.0f}s: {str(e.message)[:120]}",
                 file=sys.stderr,
             )
             time.sleep(wait)
-    raise RuntimeError("unreachable")
+            wait = min(120.0, wait * 2)
 
 
 def main() -> None:
@@ -71,7 +76,12 @@ def main() -> None:
         default=FALLBACK_MODEL_ID,
         help="Model to try when the primary model keeps returning 429/503",
     )
-    parser.add_argument("--max-attempts", type=int, default=6, help="Retry attempts per model")
+    parser.add_argument(
+        "--max-attempts",
+        type=int,
+        default=None,
+        help="Retry attempts per model (default: unlimited)",
+    )
     args = parser.parse_args()
 
     try:

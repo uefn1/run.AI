@@ -23,7 +23,7 @@ concurrency:
 jobs:
   run-ai:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,13 +34,29 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
 
       - name: Call API and write files into files/
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ITERATION: ${{ inputs.iteration }}
         run: python dev.py
+
+      - name: Verify game behavior in browser
+        env:
+          ITERATION: ${{ inputs.iteration }}
+        run: |
+          set +e
+          python tests/test_game.py > tests/last_result.txt 2>&1
+          TEST_EXIT=$?
+          set -e
+          tail -c 4000 tests/last_result.txt > /tmp/last_result_tail.txt && mv /tmp/last_result_tail.txt tests/last_result.txt
+          echo "TEST_EXIT=$TEST_EXIT" >> "$GITHUB_ENV"
+          echo "test exit code: $TEST_EXIT"
+          tail -30 tests/last_result.txt || true
 
       - name: Commit and push
         env:
@@ -69,3 +85,9 @@ jobs:
           else
             echo "最大イテレーション数 ${MAX_ITERATIONS} に到達したため、ループを終了します。"
           fi
+
+      - name: Fail if the game did not behave as specified
+        if: env.TEST_EXIT != '0'
+        run: |
+          echo "ブラウザテストが失敗しました(結果は tests/last_result.txt、次のイテレーションで修正されます)。"
+          exit 1
