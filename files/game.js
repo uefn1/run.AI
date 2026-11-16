@@ -46,7 +46,7 @@ function renderBoard() {
         for (let c = 0; c < BOARD_SIZE; c++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
-            if (currentPlayer === BLACK && validMoves.some(m => m.r === r && m.c === c)) {
+            if (currentPlayer === BLACK && !isAiThinking && validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
             }
             
@@ -72,6 +72,7 @@ function handleCellClick(r, c) {
         
         if (canMove(board, WHITE)) {
             isAiThinking = true;
+            boardEl.style.pointerEvents = 'none';
             turnIndicator.textContent = "AIが思考中...";
             setTimeout(aiMove, 600);
         } else {
@@ -88,6 +89,7 @@ function aiMove() {
     
     currentPlayer = BLACK;
     isAiThinking = false;
+    boardEl.style.pointerEvents = 'auto';
     
     if (canMove(board, BLACK)) {
         updateStatus();
@@ -106,9 +108,11 @@ function checkPass(player) {
         renderBoard();
         if (currentPlayer === WHITE) {
             isAiThinking = true;
+            boardEl.style.pointerEvents = 'none';
             setTimeout(aiMove, 600);
         }
     } else {
+        // 両者パスでゲーム終了
         const scores = calculateScores();
         const winner = scores.black > scores.white ? '黒' : (scores.white > scores.black ? '白' : '引き分け');
         messageEl.textContent = `ゲーム終了！ 勝者: ${winner}`;
@@ -185,6 +189,8 @@ function makeMove(board, r, c, player) {
 
 function getBestMove(board, player) {
     const moves = getValidMoves(board, player);
+    if (moves.length === 0) return null;
+    
     let bestScore = -Infinity;
     let bestMove = moves[0];
 
@@ -207,6 +213,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
     const moves = getValidMoves(board, currentPlayer);
 
     if (moves.length === 0) {
+        // 相手が打てない場合はパスして続行
         return minimax(board, depth - 1, alpha, beta, !isMaximizing);
     }
 
@@ -252,10 +259,9 @@ function evaluateBoard(board) {
         }
     }
     
-    // 終盤（石の数が多くなった時）は石の数を重視する
     const totalPieces = whitePieces + blackPieces;
     if (totalPieces > 40) {
-        score += (whitePieces - blackPieces) * 10;
+        score += (whitePieces - blackPieces) * 20;
     }
     
     return score;
