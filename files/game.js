@@ -232,6 +232,24 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
     }
 }
 
+function isStable(board, r, c, player) {
+    if (board[r][c] !== player) return false;
+    if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
+    const opponent = -player;
+    const directions = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
+    for (let [dr, dc] of directions) {
+        let nr = r + dr, nc = c + dc;
+        let hasOpponent = false;
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
+            if (board[nr][nc] === opponent) hasOpponent = true;
+            if (board[nr][nc] === player) break;
+            nr += dr; nc += dc;
+        }
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) return false;
+    }
+    return true;
+}
+
 function evaluateBoard(board) {
     let score = 0, whitePieces = 0, blackPieces = 0;
     for (let r = 0; r < BOARD_SIZE; r++) {
@@ -239,19 +257,14 @@ function evaluateBoard(board) {
             if (board[r][c] === WHITE) {
                 score += weights[r][c];
                 whitePieces++;
+                if (isStable(board, r, c, WHITE)) score += 50;
             } else if (board[r][c] === BLACK) {
                 score -= weights[r][c];
                 blackPieces++;
+                if (isStable(board, r, c, BLACK)) score -= 50;
             }
         }
     }
-    
-    const corners = [[0,0], [0,7], [7,0], [7,7]];
-    corners.forEach(([r, c]) => {
-        if (board[r][c] === WHITE) score += 20;
-        if (board[r][c] === BLACK) score -= 20;
-    });
-
     if (whitePieces + blackPieces > 40) {
         score += (whitePieces - blackPieces) * 20;
     }
