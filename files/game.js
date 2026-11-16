@@ -68,7 +68,7 @@ function handleCellClick(r, c) {
     if (makeMove(board, r, c, BLACK)) {
         currentPlayer = WHITE;
         updateStatus();
-        renderBoard(); // ここで currentPlayer が WHITE になっているため、黒のヒントが消える
+        renderBoard();
         
         if (canMove(board, WHITE)) {
             isAiThinking = true;
@@ -212,10 +212,8 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
     const moves = getValidMoves(board, currentPlayer);
 
     if (moves.length === 0) {
-        // 両者パス判定
         const opponent = -currentPlayer;
         if (!canMove(board, opponent)) return evaluateBoard(board);
-        // 相手が打てるならパスして深度を1減らして続行
         return minimax(board, depth - 1, alpha, beta, !isMaximizing);
     }
 
@@ -261,7 +259,6 @@ function evaluateBoard(board) {
         }
     }
     
-    // 終盤の数的な優位性を重視
     const totalPieces = whitePieces + blackPieces;
     if (totalPieces > 40) {
         score += (whitePieces - blackPieces) * 20;
