@@ -34,6 +34,7 @@ function initGame() {
     currentPlayer = BLACK;
     isAiThinking = false;
     messageEl.textContent = '';
+    boardEl.style.pointerEvents = 'auto';
     renderBoard();
     updateStatus();
 }
@@ -290,5 +291,4 @@ function updateStatus() {
 }
 
 resetBtn.onclick = initGame;
-
 initGame();

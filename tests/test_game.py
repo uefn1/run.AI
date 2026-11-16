@@ -13,33 +13,34 @@ def test_othello():
         html_path = (Path(__file__).resolve().parents[1] / "files" / "index.html").as_uri()
         page.goto(html_path)
         
-        # Initial state
+        # Initial state check
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         assert page.inner_text("#black-score") == "2"
         assert page.inner_text("#white-score") == "2"
         
-        # Move 1: Black clicks a hint
+        # Test valid move by player
         hint_cell = page.locator(".cell.hint").first
         assert hint_cell.count() > 0
         hint_cell.click()
         
-        # AI should be thinking
-        page.wait_for_timeout(500)
+        # AI thinking state
+        page.wait_for_timeout(200)
         assert "AI" in page.inner_text("#turn-indicator")
         
-        # Wait for AI to complete move
-        page.wait_for_timeout(1200)
+        # Wait for AI and return to player
+        page.wait_for_timeout(1500)
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
-        # Verify pieces increased
+        # Score should have changed
         black_score = int(page.inner_text("#black-score"))
         white_score = int(page.inner_text("#white-score"))
         assert black_score + white_score > 4
         
-        # Test Reset
+        # Reset game
         page.click("#reset-btn")
         assert page.inner_text("#black-score") == "2"
         assert page.inner_text("#white-score") == "2"
+        assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
         if errors:
             print("Console errors found:", errors)
