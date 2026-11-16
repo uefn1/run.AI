@@ -40,3 +40,21 @@ python gemma.py "こんにちは" --model gemma-4-26b-a4b-it --max-attempts 3 --
 ## CI
 
 `.github/workflows/smoke-test.yml` は手動実行（workflow_dispatch）で `gemma-4-31b-it` への疎通確認を行います。Secret `GEMINI_API_KEY` の登録後に **Actions → Gemma 4 31B smoke test → Run workflow** から実行できます。
+
+## AI開発ループ
+
+`.github/workflows/ai-dev.yml` が次の流れを自動で繰り返します。
+
+```
+APIを呼び出す(dev.py が Gemma 4 31B に指示)
+  → 生成物を files/ フォルダ内に書き出し、DEVLOG.md に記録してコミット
+  → 次のプロセス(バグ修正・機能追加)を gh workflow run で起動
+  → 現在のプロセスを終了
+```
+
+- 1回目: `prompt.txt` の仕様から新規開発
+- 2回目以降: `prompt.txt` + `files/` の現在のコード + `DEVLOG.md` を参照してバグ発見・修正・機能追加
+- 起動: **Actions → AI Game Dev Loop → Run workflow**(`max_iterations` で自動停止、既定10)
+- 停止: 進行中の run を Cancel し、次の run を起動しない
+- 開発内容を変えるには `prompt.txt` を編集してコミット
+- 生成物は `files/` 以下のみに書き込まれる(パス検証済み)
