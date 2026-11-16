@@ -59,8 +59,7 @@ function renderBoard() {
             cell.appendChild(piece);
             cell.onclick = () => handleCellClick(r, c);
             boardEl.appendChild(cell);
-        }
-    }
+        }    }
 }
 
 function handleCellClick(r, c) {
@@ -69,7 +68,7 @@ function handleCellClick(r, c) {
     if (makeMove(board, r, c, BLACK)) {
         currentPlayer = WHITE;
         updateStatus();
-        renderBoard();
+        render//
         
         if (canMove(board, WHITE)) {
             isAiThinking = true;
@@ -86,7 +85,7 @@ function aiMove() {
     const bestMove = getBestMove(board, WHITE);
     if (bestMove) {
         makeMove(board, bestMove.r, bestMove.c, WHITE);
-    }
+    }    
     
     currentPlayer = BLACK;
     isAiThinking = false;
@@ -111,8 +110,7 @@ function checkPass(player) {
             isAiThinking = true;
             boardEl.style.pointerEvents = 'none';
             setTimeout(aiMove, 600);
-        }
-    } else {
+        }    } else {
         const scores = calculateScores();
         const winner = scores.black > scores.white ? '黒' : (scores.white > scores.black ? '白' : '引き分け');
         messageEl.textContent = `ゲーム終了！ 勝者: ${winner} (黒:${scores.black} 白:${scores.white})`;
@@ -131,8 +129,7 @@ function getValidMoves(board, player) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (canPlace(board, r, c, player)) {
                 moves.push({ r, c });
-            }
-        }
+            }        }
     }
     return moves;
 }
@@ -197,7 +194,7 @@ function getBestMove(board, player) {
     for (let move of moves) {
         const tempBoard = board.map(row => [...row]);
         makeMove(tempBoard, move.r, move.c, player);
-        const score = minimax(tempBoard, 3, -Infinity, Infinity, false);
+        const score = minimax(tempBoard, 4, -Infinity, Infinity, false);
         if (score > bestScore) {
             bestScore = score;
             bestMove = move;
@@ -234,7 +231,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
         for (let move of moves) {
             const tempBoard = board.map(row => [...row]);
             makeMove(tempBoard, move.r, move.c, BLACK);
-            const evaluation = minimax(tempBoard, depth - 1, alpha, beta, true);
+            const evaluation = minimax(tempBoard, move.r, move.c, depth - 1, alpha, beta, true);
             minEval = Math.min(minEval, evaluation);
             beta = Math.min(beta, evaluation);
             if (beta <= alpha) break;
@@ -256,8 +253,7 @@ function evaluateBoard(board) {
             } else if (board[r][c] === BLACK) {
                 score -= weights[r][c];
                 blackPieces++;
-            }
-        }
+            }        }
     }
     
     const totalPieces = whitePieces + blackPieces;

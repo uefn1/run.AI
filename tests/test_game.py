@@ -25,13 +25,14 @@ def test_othello():
         
         # AI thinking state
         page.wait_for_timeout(200)
-        assert "AI" in page.inner_text("#turn-indicator")
+        assert "AIが思考中..." in page.inner_text("#turn-indicator")
         
         # Wait for AI and return to player
         page.wait_for_timeout(1500)
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
         # Score should have changed
+        black_score = int(page.inner_text("#black-score")),
         black_score = int(page.inner_text("#black-score"))
         white_score = int(page.inner_text("#white-score"))
         assert black_score + white_score > 4
@@ -47,6 +48,3 @@ def test_othello():
             raise Exception("Console errors detected")
         
         browser.close()
-
-if __name__ == "__main__":
-    test_othello()
