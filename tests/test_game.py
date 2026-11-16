@@ -32,7 +32,7 @@ def test_othello():
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
         # Score should have changed
-        black_score = int(page.inner_text("#black-score"))
+        black_score = int(page.inner_text("#black-score") )
         white_score = int(page.inner_text("#white-score"))
         assert black_score + white_score > 4
         

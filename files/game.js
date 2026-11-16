@@ -36,7 +36,7 @@ function initGame() {
     messageEl.textContent = '';
     resetBtn.classList.remove('game-over-btn');
     boardEl.style.pointerEvents = 'auto';
-    renderBoard();
+    render//Board();
     updateStatus();
 }
 
@@ -87,6 +87,10 @@ function aiMove() {
     const bestMove = getBestMove(board, WHITE);
     if (bestMove) {
         makeMove(board, bestMove.r, bestMove.c, WHITE);
+    } else {
+        // AI cannot move
+        checkPass(WHITE);
+        return;
     }
     
     currentPlayer = BLACK;
@@ -112,6 +116,8 @@ function checkPass(player) {
             isAiThinking = true;
             boardEl.style.pointerEvents = 'none';
             setTimeout(aiMove, 600);
+        } else {
+            boardEl.style.pointerEvents = 'auto';
         }
     } else {
         const scores = calculateScores();
@@ -133,8 +139,7 @@ function getValidMoves(board, player) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (canPlace(board, r, c, player)) {
                 moves.push({ r, c });
-            }
-        }
+            }        }
     }
     return moves;
 }
