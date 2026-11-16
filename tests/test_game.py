@@ -23,7 +23,7 @@ def test_othello():
         assert hint_cells.count() > 0
         hint_cells.first.click()
         
-        # AI thinking state
+        # AI thinking state check
         page.wait_for_timeout(200)
         assert "AIが思考中..." in page.inner_text("#turn-indicator")
         

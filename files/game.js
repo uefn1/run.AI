@@ -257,11 +257,11 @@ function evaluateBoard(board) {
             if (board[r][c] === WHITE) {
                 score += weights[r][c];
                 whitePieces++;
-                if (isStable(board, r, c, WHITE)) score += 50;
+                if (isStable(board, r, c, WHITE)) score += 100;
             } else if (board[r][c] === BLACK) {
                 score -= weights[r][c];
                 blackPieces++;
-                if (isStable(board, r, c, BLACK)) score -= 50;
+                if (isStable(board, r, c, BLACK)) score -= 100;
             }
         }
     }
