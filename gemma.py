@@ -11,6 +11,7 @@ from google.genai import errors, types
 MODEL_ID = "gemma-4-31b-it"
 FALLBACK_MODEL_ID = "gemma-4-26b-a4b-it"
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
+RETRY_INTERVAL = 10.0  # fixed seconds between retries
 
 
 def get_client() -> genai.Client:
@@ -32,7 +33,6 @@ def generate(
 ) -> str:
     """Call the API, retrying 429/5xx forever by default (TPM is small; wait it out)."""
     client = get_client()
-    wait = 5.0
     attempt = 0
     while True:
         attempt += 1
@@ -53,11 +53,10 @@ def generate(
                 raise
             print(
                 f"API error {e.code} (attempt {attempt}), "
-                f"retrying in {wait:.0f}s: {str(e.message)[:120]}",
+                f"retrying in {RETRY_INTERVAL:.0f}s: {str(e.message)[:120]}",
                 file=sys.stderr,
             )
-            time.sleep(wait)
-            wait = min(120.0, wait * 2)
+            time.sleep(RETRY_INTERVAL)
 
 
 def main() -> None:

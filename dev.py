@@ -10,7 +10,7 @@ The workflow runs that test, records the result, commits, launches the next
 process, and exits.
 
 TPM is only 16K: prompts are capped hard, and 429/5xx are retried forever
-with backoff (see gemma.generate).
+with a fixed 10s interval (see gemma.generate).
 """
 
 import json
