@@ -68,7 +68,7 @@ function handleCellClick(r, c) {
     if (makeMove(board, r, c, BLACK)) {
         currentPlayer = WHITE;
         updateStatus();
-        renderBoard();
+        renderBoard(); // ここで currentPlayer が WHITE になっているため、黒のヒントが消える
         
         if (canMove(board, WHITE)) {
             isAiThinking = true;
@@ -112,10 +112,9 @@ function checkPass(player) {
             setTimeout(aiMove, 600);
         }
     } else {
-        // 両者パスでゲーム終了
         const scores = calculateScores();
         const winner = scores.black > scores.white ? '黒' : (scores.white > scores.black ? '白' : '引き分け');
-        messageEl.textContent = `ゲーム終了！ 勝者: ${winner}`;
+        messageEl.textContent = `ゲーム終了！ 勝者: ${winner} (黒:${scores.black} 白:${scores.white})`;
         turnIndicator.textContent = "Game Over";
         renderBoard();
     }
@@ -213,7 +212,10 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
     const moves = getValidMoves(board, currentPlayer);
 
     if (moves.length === 0) {
-        // 相手が打てない場合はパスして続行
+        // 両者パス判定
+        const opponent = -currentPlayer;
+        if (!canMove(board, opponent)) return evaluateBoard(board);
+        // 相手が打てるならパスして深度を1減らして続行
         return minimax(board, depth - 1, alpha, beta, !isMaximizing);
     }
 
@@ -259,6 +261,7 @@ function evaluateBoard(board) {
         }
     }
     
+    // 終盤の数的な優位性を重視
     const totalPieces = whitePieces + blackPieces;
     if (totalPieces > 40) {
         score += (whitePieces - blackPieces) * 20;
