@@ -276,8 +276,8 @@ function calculateScores() {
     let black = 0, white = 0;
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
-            if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            if (board[r][c] === BLACK) { black++; }
+            if (board[r][c] === WHITE) { white++; }
         }
     }
     return { black, white };
