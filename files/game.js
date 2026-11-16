@@ -234,36 +234,19 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
     }
 }
 
-function isStable(board, r, c, player) {
-    if (board[r][c] !== player) return false;
-    if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
-    const opponent = -player;
-    const directions = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
-    for (let [dr, dc] of directions) {
-        let nr = r + dr, nc = c + dc;
-        let hasOpponent = false;
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
-            if (board[nr][nc] === opponent) hasOpponent = true;
-            if (board[nr][nc] === player) break;
-            nr += dr; nc += dc;
-        }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) return false;
-    }
-    return true;
-}
-
 function evaluateBoard(board) {
     let score = 0, whitePieces = 0, blackPieces = 0;
+    const stable = getStableDiscs(board);
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === WHITE) {
                 score += weights[r][c];
                 whitePieces++;
-                if (isStable(board, r, c, WHITE)) score += 100;
+                if (stable[r][c]) score += 100;
             } else if (board[r][c] === BLACK) {
                 score -= weights[r][c];
                 blackPieces++;
-                if (isStable(board, r, c, BLACK)) score -= 100;
+                if (stable[r][c]) score -= 100;
             }
         }
     }
@@ -271,6 +254,43 @@ function evaluateBoard(board) {
         score += (whitePieces - blackPieces) * 30;
     }
     return score;
+}
+
+function getStableDiscs(board) {
+    const stable = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(false));
+    let changed = true;
+    while (changed) {
+        changed = false;
+        for (let r = 0; r < BOARD_SIZE; r++) {
+            for (let c = 0; c < BOARD_SIZE; c++) {
+                if (board[r][c] === EMPTY || stable[r][c]) continue;
+                if (isDiscStable(board, stable, r, c)) {
+                    stable[r][c] = true;
+                    changed = true;
+                }
+            }
+        }
+    }
+    return stable;
+}
+
+function isDiscStable(board, stable, r, c) {
+    const player = board[r][c];
+    const opponent = -player;
+    const directions = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
+    for (let [dr, dc] of directions) {
+        let nr = r + dr, nc = c + dc;
+        let hasOpponent = false;
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
+            if (board[nr][nc] === opponent && !stable[nr][nc]) {
+                hasOpponent = true;
+            }
+            if (board[nr][nc] === player) break;
+            nr += dr; nc += dc;
+        }
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) return false;
+    }
+    return true;
 }
 
 function calculateScores() {
