@@ -6,12 +6,12 @@ def test_othello():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         
-        # Console error detection
         errors = []
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
         page.on("pageerror", lambda exc: errors.append(exc.text))
         
-        html_path = (Path(__file__).resolve().parents[0] / "files" / "index.html").as_uri()
+        # Fixed path to files/index.html relative to the test file
+        html_path = (Path(__file__).resolve().parents[1] / "files" / "index.html").as_uri()
         page.goto(html_path)
         
         # Initial state check
@@ -24,8 +24,7 @@ def test_othello():
         assert hint_cell.count() > 0
         hint_cell.click()
         
-        # Check turn change (AI should start thinking)
-        # The turn indicator might change to "AIが思考中..." or "AIの番です (白)"
+        # AI should start thinking
         page.wait_for_timeout(1000)
         
         # After AI move, it should be black's turn again
@@ -40,7 +39,6 @@ def test_othello():
         page.click("#reset-btn")
         assert page.inner_text("#black-score") == "2"
         
-        # Final check for errors
         if errors:
             print("Errors found:", errors)
             raise Exception("Console errors detected")
