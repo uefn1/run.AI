@@ -124,6 +124,7 @@ function checkPass(player) {
         messageEl.textContent = `ゲーム終了！ 勝者: ${winner} (黒:${scores.black} 白:${scores.white})`;
         turnIndicator.textContent = "Game Over";
         resetBtn.classList.add('game-over-btn');
+        boardEl.style.pointerEvents = 'none';
         renderBoard();
     }
 }
