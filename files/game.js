@@ -87,20 +87,18 @@ function aiMove() {
     const bestMove = getBestMove(board, WHITE);
     if (bestMove) {
         makeMove(board, bestMove.r, bestMove.c, WHITE);
+        currentPlayer = BLACK;
+        isAiThinking = false;
+        boardEl.style.pointerEvents = 'auto';
+        
+        if (canMove(board, BLACK)) {
+            updateStatus();
+            renderBoard();
+        } else {
+            checkPass(BLACK);
+        }
     } else {
         checkPass(WHITE);
-        return;
-    }
-    
-    currentPlayer = BLACK;
-    isAiThinking = false;
-    boardEl.style.pointerEvents = 'auto';
-    
-    if (canMove(board, BLACK)) {
-        updateStatus();
-        renderBoard();
-    } else {
-        checkPass(BLACK);
     }
 }
 
