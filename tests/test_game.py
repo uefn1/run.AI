@@ -28,7 +28,7 @@ def test_othello():
         assert "AIが思考中..." in page.inner_text("#turn-indicator")
         
         # AIのターンが終わり、プレイヤーに戻ったことを確認
-        page.wait_for_timeout(1500)
+        page.wait_for_timeout(1000)
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
         # スコアが変動したことを確認
