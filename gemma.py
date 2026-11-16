@@ -10,7 +10,7 @@ from google.genai import errors, types
 
 MODEL_ID = "gemma-4-31b-it"
 FALLBACK_MODEL_ID = "gemma-4-26b-a4b-it"
-RETRYABLE_STATUS = {429, 503}
+RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
 
 def get_client() -> genai.Client:
