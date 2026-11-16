@@ -40,13 +40,13 @@ function initGame() {
 
 function renderBoard() {
     boardEl.innerHTML = '';
-    const validMoves = getValidMoves(board, currentPlayer);
+    const validMoves = (currentPlayer === BLACK && !isAiThinking) ? getValidMoves(board, BLACK) : [];
 
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
-            if (currentPlayer === BLACK && !isAiThinking && validMoves.some(m => m.r === r && m.c === c)) {
+            if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
             }
             
