@@ -36,7 +36,7 @@ function initGame() {
     messageEl.textContent = '';
     resetBtn.classList.remove('game-over-btn');
     boardEl.style.pointerEvents = 'auto';
-    render//Board();
+    renderBoard();
     updateStatus();
 }
 
@@ -88,7 +88,6 @@ function aiMove() {
     if (bestMove) {
         makeMove(board, bestMove.r, bestMove.c, WHITE);
     } else {
-        // AI cannot move
         checkPass(WHITE);
         return;
     }
@@ -139,7 +138,8 @@ function getValidMoves(board, player) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (canPlace(board, r, c, player)) {
                 moves.push({ r, c });
-            }        }
+            }
+        }
     }
     return moves;
 }
