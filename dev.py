@@ -16,6 +16,7 @@ with a fixed 10s interval (see gemma.generate).
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
 from gemma import generate
@@ -32,6 +33,7 @@ MAX_TOTAL_CHARS = 30000
 MAX_DEVLOG_CHARS = 4000
 MAX_TEST_CHARS = 8000
 MAX_RESULT_CHARS = 4000
+MAX_RESPONSE_ATTEMPTS = 3  # re-asks when the model returns unparseable output
 
 SYSTEM = (
     "あなたはブラウザゲームの開発者です。指示に従い、単一の JSON オブジェクトだけを"
@@ -119,7 +121,7 @@ def build_prompt(spec: str, current: dict[str, str]) -> str:
             "- 依存ライブラリなし・ビルド不要で、files/index.html を開けば遊べること\n"
             "- 完成度の高い実装にする。ただしコードは簡潔に保ち、不必要に長くしない(応答サイズの制約が厳しいため)\n\n"
             "# テスト\n" + TEST_RULES +
-            "\n# 出力形式(この形式の JSON オブジェクト 1 個だけを出力)\n"
+            "\n# 出力形式(この形式の JSON オブジェクト 1 個だけを、閉じられて完結した状態で出力)\n"
             '{"summary": "実装内容の要約(日本語)", '
             '"files": {"files/index.html": "<ファイルの全文>", ...}, '
             '"test": "<テストスクリプトの全文>"}'
@@ -145,18 +147,15 @@ def build_prompt(spec: str, current: dict[str, str]) -> str:
         "- 変更が必要なファイルのみ、更新後の全文を出力する。新規ファイルも files/ の下に作成する。\n"
         "- コードは簡潔に保ち、不必要に長くしない(応答サイズの制約が厳しいため)。\n\n"
         "# テスト\n" + TEST_RULES +
-        "\n# 出力形式(この形式の JSON オブジェクト 1 個だけを出力)\n"
+        "\n# 出力形式(この形式の JSON オブジェクト 1 個だけを、閉じられて完結した状態で出力)\n"
         '{"summary": "発見したバグと修正・追加内容(日本語)", '
         '"files": {"files/xxx.html": "<更新後の全文>", ...}, '
         '"test": "<更新後のテストスクリプトの全文>"}'
     )
 
 
-def extract_json(text: str):
-    text = text.strip()
-    if text.startswith("```"):
-        text = text.split("\n", 1)[1] if "\n" in text else text
-        text = text.rsplit("```", 1)[0]
+def _scan_json(text: str):
+    """Find the first balanced {...} in text and json.loads it, else None."""
     start = text.find("{")
     while start != -1:
         depth = 0
@@ -184,6 +183,22 @@ def extract_json(text: str):
                         break
         start = text.find("{", start + 1)
     return None
+
+
+def extract_json(text: str):
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1] if "\n" in text else text
+        text = text.rsplit("```", 1)[0]
+    data = _scan_json(text)
+    if data is None:
+        # Some models emit full-width/typographic quotes as JSON delimiters.
+        fixed = text.translate(
+            str.maketrans({"\u201c": '"', "\u201d": '"', "\u201e": '"', "\u201f": '"'})
+        )
+        if fixed != text:
+            data = _scan_json(fixed)
+    return data
 
 
 def target_path(name: str) -> Path:
@@ -241,13 +256,27 @@ def main() -> None:
     mode = "初期開発" if not current else "バグ修正・機能追加"
     print(f"iteration {ITERATION} | mode: {mode} | 既存ファイル: {len(current)}", flush=True)
 
-    text = generate(
-        build_prompt(spec, current),
-        system_instruction=SYSTEM,
-        thinking_level=os.environ.get("DEV_THINKING", "minimal"),
-    )
-    data = extract_json(text)
-    if not isinstance(data, dict) or not isinstance(data.get("files"), dict) or not data["files"]:
+    prompt = build_prompt(spec, current)
+    data = None
+    text = ""
+    for attempt in range(1, MAX_RESPONSE_ATTEMPTS + 1):
+        text = generate(
+            prompt,
+            system_instruction=SYSTEM,
+            thinking_level=os.environ.get("DEV_THINKING", "minimal"),
+        )
+        data = extract_json(text)
+        if isinstance(data, dict) and isinstance(data.get("files"), dict) and data["files"]:
+            break
+        print(
+            f"WARNING: モデルの応答から files を取得できませんでした "
+            f"(attempt {attempt}/{MAX_RESPONSE_ATTEMPTS}): {text[:200]}",
+            file=sys.stderr,
+        )
+        data = None
+        if attempt < MAX_RESPONSE_ATTEMPTS:
+            time.sleep(10)
+    if data is None:
         sys.exit(f"ERROR: モデルの応答から files を取得できませんでした: {text[:300]}")
 
     written = write_files(data["files"])
