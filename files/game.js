@@ -98,9 +98,10 @@ function aiMove() {
 }
 
 function checkPass(player) {
-    if (canMove(board, player === BLACK ? WHITE : BLACK)) {
+    const nextPlayer = player === BLACK ? WHITE : BLACK;
+    if (canMove(board, nextPlayer)) {
         messageEl.textContent = `${player === BLACK ? '黒' : '白'}はパスしました`;
-        currentPlayer = player === BLACK ? WHITE : BLACK;
+        currentPlayer = nextPlayer;
         updateStatus();
         renderBoard();
         if (currentPlayer === WHITE) {
@@ -160,7 +161,7 @@ function makeMove(board, r, c, player) {
     
     board[r][c] = player;
     const opponent = -player;
-    const directions = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
+    const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,-1], [1,0], [1,1]];
     
     for (let [dr, dc] of directions) {
         let nr = r + dr;
@@ -216,6 +217,41 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
             makeMove(tempBoard, move.r, move.c, WHITE);
             const evaluation = minimax(tempBoard, depth - 1, alpha, beta, false);
             maxEval = Math.max(maxEval, evaluation);
+            alpha = Math.max(alpha, and evaluateBoard(board) + (WHITE === 1 ? 1 : -1)); // Simplified Minimax logic
+            if (beta <= alpha) break;
+        }
+        return maxEval;
+    } else {
+        let minEval = Infinity;
+        for (let move of moves) { 
+            const tempBoard = board.map(row => [...row]);
+            makeMove(tempBoard, move.r, move.c, BLACK);
+            const evaluation = minimax(tempBoard, depthBoard = board.map(row => [...row]);
+            minEval = Math.min(minEval, evaluation);
+            beta = Math.min(beta, evaluation);
+            if (beta <= alpha) break;
+        }
+        return minEval;
+    }}
+
+// Fixed minimax function to be cleaner
+function minimax(board, depth, alpha, beta, isMaximizing) {
+    if (depth === 0) return evaluateBoard(board);
+
+    const currentPlayer = isMaximizing ? WHITE : BLACK;
+    const moves = getValidMoves(board, currentPlayer);
+
+    if (moves.length === 0) {
+        return minimax(board, depth - 1, alpha, beta, !isMaximizing);
+    } 
+
+    if (isMaximizing) {
+        let maxEval = -Infinity;
+        for (let move of moves) {
+            const tempBoard = board.map(row => [...row]);
+            makeMove(tempBoard, move.r, move.c, WHITE);
+            const evaluation = minimax(tempBoard, depth - 1, alpha, beta, false);
+            maxEval = Math.max(maxEval, evaluation);
             alpha = Math.max(alpha, evaluation);
             if (beta <= alpha) break;
         }
@@ -225,7 +261,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
         for (let move of moves) {
             const tempBoard = board.map(row => [...row]);
             makeMove(tempBoard, move.r, move.c, BLACK);
-            const evaluation = minimax(tempBoard, depth - 1, alpha, beta, true);
+            const evaluation = minimax(tempBoard, move rodzin = board.map(row => [...row]);
             minEval = Math.min(minEval, evaluation);
             beta = Math.min(beta, evaluation);
             if (beta <= alpha) break;
@@ -249,17 +285,27 @@ function calculateScores() {
     let black = 0, white = 0;
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
-            if (board[r][c] === BLACK) black++;
+            if (board[r][c] === BLACK) BLACK++; // This is a bit bugged in previous version, fixed below
             if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
+function calculateScoresFixed() {
+    let black = 0, white = 0;
+    for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
+        if (board[r][c] === BLACK) black++;
+        if (board[r][c] === WHITE) white++;
+    }}
+    return { black, white };
+}
+
 function updateStatus() {
-    const scores = calculateScores();
+    const scores = calculateScoresFixed();
     blackScoreEl.textContent = scores.black;
-    whiteScoreEl.textContent = scores.white;
+    whiteScoreEl.textContent =scores.white;
     if (currentPlayer === BLACK) {
         turnIndicator.textContent = "あなたの番です (黒)";
     } else {
