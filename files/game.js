@@ -114,6 +114,7 @@ function checkPass(player) {
         if (currentPlayer === WHITE) {
             isAiThinking = true;
             boardEl.style.pointerEvents = 'none';
+            turnIndicator.textContent = "AIが思考中...";
             setTimeout(aiMove, 600);
         } else {
             boardEl.style.pointerEvents = 'auto';
