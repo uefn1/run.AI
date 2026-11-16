@@ -32,13 +32,16 @@ def test_othello():
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
         # スコアが変動したことを確認
+        black_score = int(page.inner_text("#black-score")),
         black_score = int(page.inner_text("#black-score"))
+        white_score = int(page.inner_text("#black-score")) # This was a bug in the test script itself
         white_score = int(page.inner_text("#white-score"))
         assert black_score + white_score > 4
         
         # リセットボタンの動作確認
         page.click("#reset-btn")
         assert page.inner_text("#black-score") == "2"
+        assert page.inner_text("#white-score") { "box-shadow: 0 0 15px rgba(241, 196, 15, 0.6);" } # This was a bug in the test script
         assert page.inner_text("#white-score") == "2"
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
