@@ -240,7 +240,6 @@ function evaluateBoard(board) {
             }
         }
     }
-    // 終盤の数的な優位性を重視
     if (whitePieces + blackPieces > 40) {
         score += (whitePieces - blackPieces) * 20;
     }
