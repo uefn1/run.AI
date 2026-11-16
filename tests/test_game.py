@@ -19,9 +19,9 @@ def test_othello():
         assert page.inner_text("#white-score") == "2"
         
         # Test valid move by player
-        hint_cell = page.locator(".cell.hint").first
-        assert hint_cell.count() > 0
-        hint_cell.click()
+        hint_cells = page.locator(".cell.hint")
+        assert hint_cells.count() > 0
+        hint_cells.first.click()
         
         # AI thinking state
         page.wait_for_timeout(200)

@@ -34,6 +34,7 @@ function initGame() {
     currentPlayer = BLACK;
     isAiThinking = false;
     messageEl.textContent = '';
+    resetBtn.classList.remove('game-over-btn');
     boardEl.style.pointerEvents = 'auto';
     renderBoard();
     updateStatus();
@@ -117,6 +118,7 @@ function checkPass(player) {
         const winner = scores.black > scores.white ? '黒' : (scores.white > scores.black ? '白' : '引き分け');
         messageEl.textContent = `ゲーム終了！ 勝者: ${winner} (黒:${scores.black} 白:${scores.white})`;
         turnIndicator.textContent = "Game Over";
+        resetBtn.classList.add('game-over-btn');
         renderBoard();
     }
 }
@@ -229,11 +231,19 @@ function evaluateBoard(board) {
     let score = 0, whitePieces = 0, blackPieces = 0;
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
-            if (board[r][c] === WHITE) { score += weights[r][c]; whitePieces++; } 
-            else if (board[r][c] === BLACK) { score -= weights[r][c]; blackPieces++; }
+            if (board[r][c] === WHITE) {
+                score += weights[r][c];
+                whitePieces++;
+            } else if (board[r][c] === BLACK) {
+                score -= weights[r][c];
+                blackPieces++;
+            }
         }
     }
-    if (whitePieces + blackPieces > 40) score += (whitePieces - blackPieces) * 20;
+    // 終盤の数的な優位性を重視
+    if (whitePieces + blackPieces > 40) {
+        score += (whitePieces - blackPieces) * 20;
+    }
     return score;
 }
 
