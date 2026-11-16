@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Othello</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>AI Othello</h1>
+        <div class="status-bar">
+            <div id="turn-indicator" class="turn-indicator">あなたの番です (黒)</div>
+            <div class="score-board">
+                <span class="score">黒: <span id="black-score">2</span></span>
+                <span class="score">白: <span id="white-score">2</span></span>
+            </div>
+        </div>
+        <div id="board" class="board"></div>
+        <div class="controls">
+            <button id="reset-btn">リセット</button>
+        </div>
+        <div id="message" class="message"></div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
