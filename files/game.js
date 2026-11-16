@@ -59,7 +59,8 @@ function renderBoard() {
             cell.appendChild(piece);
             cell.onclick = () => handleCellClick(r, c);
             boardEl.appendChild(cell);
-        }    }
+        }
+    }
 }
 
 function handleCellClick(r, c) {
@@ -68,7 +69,7 @@ function handleCellClick(r, c) {
     if (makeMove(board, r, c, BLACK)) {
         currentPlayer = WHITE;
         updateStatus();
-        render//
+        renderBoard();
         
         if (canMove(board, WHITE)) {
             isAiThinking = true;
@@ -85,7 +86,7 @@ function aiMove() {
     const bestMove = getBestMove(board, WHITE);
     if (bestMove) {
         makeMove(board, bestMove.r, bestMove.c, WHITE);
-    }    
+    }
     
     currentPlayer = BLACK;
     isAiThinking = false;
@@ -110,7 +111,8 @@ function checkPass(player) {
             isAiThinking = true;
             boardEl.style.pointerEvents = 'none';
             setTimeout(aiMove, 600);
-        }    } else {
+        }
+    } else {
         const scores = calculateScores();
         const winner = scores.black > scores.white ? '黒' : (scores.white > scores.black ? '白' : '引き分け');
         messageEl.textContent = `ゲーム終了！ 勝者: ${winner} (黒:${scores.black} 白:${scores.white})`;
@@ -129,7 +131,8 @@ function getValidMoves(board, player) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (canPlace(board, r, c, player)) {
                 moves.push({ r, c });
-            }        }
+            }
+        }
     }
     return moves;
 }
@@ -140,16 +143,12 @@ function canPlace(board, r, c, player) {
     const directions = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
     
     for (let [dr, dc] of directions) {
-        let nr = r + dr;
-        let nc = c + dc;
+        let nr = r + dr, nc = c + dc;
         let hasOpponentBetween = false;
-        
         while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
-            nr += dr;
-            nc += dc;
+            nr += dr; nc += dc;
             hasOpponentBetween = true;
         }
-        
         if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
             return true;
         }
@@ -159,26 +158,18 @@ function canPlace(board, r, c, player) {
 
 function makeMove(board, r, c, player) {
     if (!canPlace(board, r, c, player)) return false;
-    
     board[r][c] = player;
     const opponent = -player;
     const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,-1], [1,0], [1,1]];
-    
     for (let [dr, dc] of directions) {
-        let nr = r + dr;
-        let nc = c + dc;
+        let nr = r + dr, nc = c + dc;
         let cellsToFlip = [];
-        
         while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
             cellsToFlip.push({ r: nr, c: nc });
-            nr += dr;
-            nc += dc;
+            nr += dr; nc += dc;
         }
-        
         if (cellsToFlip.length > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
-            for (let cell of cellsToFlip) {
-                board[cell.r][cell.c] = player;
-            }
+            for (let cell of cellsToFlip) board[cell.r][cell.c] = player;
         }
     }
     return true;
@@ -187,10 +178,7 @@ function makeMove(board, r, c, player) {
 function getBestMove(board, player) {
     const moves = getValidMoves(board, player);
     if (moves.length === 0) return null;
-    
-    let bestScore = -Infinity;
-    let bestMove = moves[0];
-
+    let bestScore = -Infinity, bestMove = moves[0];
     for (let move of moves) {
         const tempBoard = board.map(row => [...row]);
         makeMove(tempBoard, move.r, move.c, player);
@@ -205,16 +193,13 @@ function getBestMove(board, player) {
 
 function minimax(board, depth, alpha, beta, isMaximizing) {
     if (depth === 0) return evaluateBoard(board);
-
     const currentPlayer = isMaximizing ? WHITE : BLACK;
     const moves = getValidMoves(board, currentPlayer);
-
     if (moves.length === 0) {
         const opponent = -currentPlayer;
         if (!canMove(board, opponent)) return evaluateBoard(board);
         return minimax(board, depth - 1, alpha, beta, !isMaximizing);
     }
-
     if (isMaximizing) {
         let maxEval = -Infinity;
         for (let move of moves) {
@@ -231,7 +216,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
         for (let move of moves) {
             const tempBoard = board.map(row => [...row]);
             makeMove(tempBoard, move.r, move.c, BLACK);
-            const evaluation = minimax(tempBoard, move.r, move.c, depth - 1, alpha, beta, true);
+            const evaluation = minimax(tempBoard, depth - 1, alpha, beta, true);
             minEval = Math.min(minEval, evaluation);
             beta = Math.min(beta, evaluation);
             if (beta <= alpha) break;
@@ -241,26 +226,14 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
 }
 
 function evaluateBoard(board) {
-    let score = 0;
-    let whitePieces = 0;
-    let blackPieces = 0;
-    
+    let score = 0, whitePieces = 0, blackPieces = 0;
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
-            if (board[r][c] === WHITE) {
-                score += weights[r][c];
-                whitePieces++;
-            } else if (board[r][c] === BLACK) {
-                score -= weights[r][c];
-                blackPieces++;
-            }        }
+            if (board[r][c] === WHITE) { score += weights[r][c]; whitePieces++; } 
+            else if (board[r][c] === BLACK) { score -= weights[r][c]; blackPieces++; }
+        }
     }
-    
-    const totalPieces = whitePieces + blackPieces;
-    if (totalPieces > 40) {
-        score += (whitePieces - blackPieces) * 20;
-    }
-    
+    if (whitePieces + blackPieces > 40) score += (whitePieces - blackPieces) * 20;
     return score;
 }
 
@@ -279,11 +252,7 @@ function updateStatus() {
     const scores = calculateScores();
     blackScoreEl.textContent = scores.black;
     whiteScoreEl.textContent = scores.white;
-    if (currentPlayer === BLACK) {
-        turnIndicator.textContent = "あなたの番です (黒)";
-    } else {
-        turnIndicator.textContent = "AIの番です (白)";
-    }
+    turnIndicator.textContent = currentPlayer === BLACK ? "あなたの番です (黒)" : "AIの番です (白)";
 }
 
 resetBtn.onclick = initGame;
