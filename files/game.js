@@ -76,7 +76,7 @@ function handleCellClick(r, c) {
             isAiThinking = true;
             boardEl.style.pointerEvents = 'none';
             turnIndicator.textContent = "AIが思考中...";
-            setTimeout(aiMove, 600);
+            setTimeout(aiMove, 400);
         } else {
             checkPass(WHITE);
         }
@@ -115,7 +115,7 @@ function checkPass(player) {
             isAiThinking = true;
             boardEl.style.pointerEvents = 'none';
             turnIndicator.textContent = "AIが思考中...";
-            setTimeout(aiMove, 600);
+            setTimeout(aiMove, 400);
         } else {
             boardEl.style.pointerEvents = 'auto';
         }
@@ -213,7 +213,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
         let maxEval = -Infinity;
         for (let move of moves) {
             const tempBoard = board.map(row => [...row]);
-            makeMove(tempBoard, move.r, move.c, WHITE);
+            makeMove(tempBoard, ownPlayer(isMaximizing), tempBoard, move.r, move.c, WHITE);
             const evaluation = minimax(tempBoard, depth - 1, alpha, beta, false);
             maxEval = Math.max(maxEval, evaluation);
             alpha = Math.max(alpha, evaluation);
@@ -234,6 +234,44 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
     }
 }
 
+// 修正: makeMoveの呼び出し引数ミスを修正 (minimax内)
+function minimax_fixed(board, depth, alpha, beta, isMaximizing) {
+    if (depth === 0) return evaluateBoard(board);
+    const currentPlayer = isMaximizing ? WHITE : BLACK;
+    const moves = getValidMoves(board, currentPlayer);
+    if (moves.length === 0) {
+        const opponent = -currentPlayer;
+        if (!canMove(board, opponent)) return evaluateBoard(board);
+        return minimax(board, depth - 1, alpha, beta, !isMaximizing);
+    }
+    if (isMaximizing) {
+        let maxEval = -Infinity;
+        for (let move of moves) {
+            const tempBoard = board.map(row => [...row]);
+            makeMove(tempBoard, move.r, move.c, WHITE);
+            const evaluation = minimax_fixed(tempBoard, depth - 1, alpha, beta, false);
+            maxEval = Math.max(maxEval, evaluation);
+            alpha = Math.max(alpha, evaluation);
+            if (beta <= alpha) break;
+        }
+        return maxEval;
+    } else {
+        let minEval = Infinity;
+        for (let move of moves) {
+            const tempBoard = board.map(row => [...row]);
+            makeMove(tempBoard, move.r, move.c, BLACK);
+            const evaluation = minimax_fixed(tempBoard, depth - 1, alpha, beta, true);
+            minEval = Math.min(minEval, evaluation);
+            beta = Math.min(beta, evaluation);
+            if (beta <= alpha) break;
+        }
+        return minEval;
+    }
+}
+
+// 再定義して上書き
+var minimax = minimax_fixed;
+
 function evaluateBoard(board) {
     let score = 0, whitePieces = 0, blackPieces = 0;
     const stable = getStableDiscs(board);
@@ -242,11 +280,11 @@ function evaluateBoard(board) {
             if (board[r][c] === WHITE) {
                 score += weights[r][c];
                 whitePieces++;
-                if (stable[r][c]) score += 100;
+                if (stable[r][c]) score += 50;
             } else if (board[r][c] === BLACK) {
                 score -= weights[r][c];
                 blackPieces++;
-                if (stable[r][c]) score -= 100;
+                if (stable[r][c]) score -= 50;
             }
         }
     }

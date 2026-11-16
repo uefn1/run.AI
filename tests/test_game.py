@@ -28,7 +28,7 @@ def test_othello():
         assert "AIが思考中..." in page.inner_text("#turn-indicator")
         
         # Wait for AI and return to player
-        page.wait_for_timeout(2000)
+        page.wait_for_timeout(1500)
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
         # Score should have changed
