@@ -1,4 +1,0 @@
-  File "/home/runner/work/run.AI/run.AI/tests/test_game.py", line 44
-    assert page.inner_text("#white-score") { "box-shadow: 0 0 15px rgba(241, 196, 15, 0.6);" } # This was a bug in the test script
-                                           ^
-SyntaxError: invalid syntax

@@ -230,7 +230,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
         for (let move of moves) {
             const tempBoard = board.map(row => [...row]);
             makeMove(tempBoard, move.r, move.c, BLACK);
-            const evaluation = minimax(tempBoard, move.r, move.c, BLACK); // BUG FIX: should be minimax(tempBoard, depth - 1, alpha, beta, true);
+            const evaluation = minimax(tempBoard, depth - 1, alpha, beta, true);
             minEval = Math.min(minEval, evaluation);
             beta = Math.min(beta, evaluation);
             if (beta <= alpha) break;
@@ -255,14 +255,13 @@ function evaluateBoard(board) {
             }
         }
     }
-    if (whitePieces + blackPieces > 45) { // 終盤の石の数による評価
+    if (whitePieces + blackPieces > 45) {
         score += (whitePieces - blackPieces) * 50;
     } else {
-        // 相手の打てる場所を制限する（移動度制限）
         const whiteMoves = getValidMoves(board, WHITE).length;
         const whiteMobility = whiteMoves > 0 ? 1 : 0;
-        const blackMoves = getValidMovesMoves = getValidMoves(board, BLACK).length;
-        const blackMobility = blackMoves > 0 ? 0 : 1;
+        const blackMoves = getValidMoves(board, BLACK).length;
+        const blackMobility = blackMoves > 0 ? 1 : 0;
         score += (whiteMobility - blackMobility) * 20;
     }
     return score;
