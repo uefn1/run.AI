@@ -241,7 +241,6 @@ function evaluateBoard(board) {
         }
     }
     
-    // Stable discs bonus (Simplified)
     const corners = [[0,0], [0,7], [7,0], [7,7]];
     corners.forEach(([r, c]) => {
         if (board[r][c] === WHITE) score += 20;
