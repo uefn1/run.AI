@@ -25,7 +25,17 @@ python gemma.py "茶道の目的は？" --system "あなたは京都の茶道の
 
 # 思考プロセスを有効化（高難度の推論タスク向け）
 python gemma.py "この数学の証明を検証して" --thinking high
+
+# モデルやリトライを指定
+python gemma.py "こんにちは" --model gemma-4-26b-a4b-it --max-attempts 3 --fallback-model ""
 ```
+
+### 高負荷時(429/503)の挙動
+
+`gemma-4-31b-it` は無料枠で共有されているため、高需要時に `503 UNAVAILABLE` が返ることがあります。
+`gemma.py` は指数バックオフで自動リトライし（既定 6 回、最大 5→10→20→40→60 秒待機）、
+それでも失敗した場合は `gemma-4-26b-a4b-it` に自動フォールバックします。
+フォールバックを無効にしたい場合は `--fallback-model ""` を指定してください。
 
 ## CI
 
