@@ -84,7 +84,7 @@ function handleCellClick(r, c) {
         updateStatus();
         renderBoard();
         setTimeout(() => {
-            if (isGameOver) return; // Guard for reset during timeout
+            if (isGameOver) return;
             if (canMove(board, WHITE)) {
                 startAiTurn();
             } else {
@@ -346,8 +346,5 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
-
+resetBtn.onclick = initGame;
 initGame();
