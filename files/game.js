@@ -99,7 +99,7 @@ function startAiTurn() {
     boardEl.style.pointerEvents = 'none';
     turnIndicator.textContent = "AIが思考中...";
     renderBoard();
-    setTimeout(aiMove, 600);
+    setTimeout(aiMove, 500);
 }
 
 function aiMove() {
