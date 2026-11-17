@@ -63,13 +63,14 @@ function renderBoard() {
             cell.className = 'cell';
             if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
+            } else {
+                cell.onclick = () => handleCellClick(r, c);
             }
             const piece = document.createElement('div');
             piece.className = 'piece';
             if (board[r][c] === BLACK) piece.classList.add('black');
             if (board[r][c] === WHITE) piece.classList.add('white');
             cell.appendChild(piece);
-            cell.onclick = () => handleCellClick(r, c);
             boardEl.appendChild(cell);
         }
     }
@@ -84,7 +85,7 @@ function handleCellClick(r, c) {
         updateStatus();
         renderBoard();
         setTimeout(() => {
-            if (isGameOver) return;
+            if (isGameOver || currentPlayer !== WHITE) return;
             if (canMove(board, WHITE)) {
                 startAiTurn();
             } else {
@@ -291,8 +292,9 @@ function evaluateBoard(board) {
             }
         }
     }
-    if (whitePieces + blackPieces > 40) score += (whitePieces - blackPieces) * 50;
-    else {
+    if (whitePieces + blackPieces > 40) {
+        score += (whitePieces - blackPieces) * 50;
+    } else {
         const whiteMoves = getValidMoves(board, WHITE).length;
         const blackMoves = getValidMoves(board, BLACK).length;
         score += (whiteMoves - blackMoves) * 25;

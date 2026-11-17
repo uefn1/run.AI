@@ -41,7 +41,7 @@ def test_othello():
         page.click("#reset-btn")
         page.wait_for_selector("text=あなたの番です (黒)")
         assert page.inner_text("#black-score") == "2"
-        assert page.inner_text("#white-score") == "2"
+        assert page.inner_text(" #white-score") == "2" if " #white-score" in page.inner_text("#white-score") else page.inner_text("#white-score") == "2"
         
         if errors:
             print("Console errors found:", errors)
