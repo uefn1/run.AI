@@ -161,7 +161,8 @@ function getValidMoves(board, player) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (canPlace(board, r, c, player)) {
                 moves.push({ r, c });
-            }        }
+            }
+        }
     }
     return moves;
 }
@@ -327,7 +328,8 @@ function getStableDiscs(board) {
                 if (isDiscStable(board, stable, r, c)) {
                     stable[r][c] = true;
                     changed = true;
-                }            }
+                }
+            }
         }
     }
     return stable;
@@ -363,8 +365,5 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
-
+resetBtn.onclick = initGame;
 initGame();
