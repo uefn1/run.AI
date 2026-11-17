@@ -63,7 +63,7 @@ function renderBoard() {
             cell.className = 'cell';
             if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
-            }
+            } 
             
             const piece = document.createElement('div');
             piece.className = 'piece';
@@ -329,8 +329,7 @@ function getStableDiscs(board) {
                     stableDiscs[r][c] = true;
                     changed = true;
                 }
-            }
-        }
+            }        }
     }
     return stableDiscs;
 }
@@ -365,6 +364,8 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
+resetBtn.onclick = () => {
+    initGame();
+};
 
 initGame();
