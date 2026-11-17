@@ -98,6 +98,7 @@ function aiMove() {
         boardEl.style.pointerEvents = 'auto';
         
         if (canMove(board, BLACK)) {
+            messageEl.textContent = '';
             updateStatus();
             renderBoard();
         } else {
