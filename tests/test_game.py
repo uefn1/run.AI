@@ -32,7 +32,7 @@ def test_othello():
         # Wait for AI turn to end and player turn to return
         page.wait_for_selector("text=あなたの番です (黒)", timeout=15000)
         
-        # Score Change - this confirms flipping logic
+        # Score Change
         black_score = int(page.inner_text("#black-score"))
         white_score = int(page.inner_text("#white-score"))
         assert black_score + white_score > 4
