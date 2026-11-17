@@ -6,6 +6,7 @@ const EMPTY = 0;
 let board = [];
 let currentPlayer = BLACK;
 let isAiThinking = false;
+let isGameOver = false;
 
 const boardEl = document.getElementById('board');
 const blackScoreEl = document.getElementById('black-score');
@@ -33,6 +34,7 @@ function initGame() {
     board[4][3] = BLACK;
     currentPlayer = BLACK;
     isAiThinking = false;
+    isGameOver = false;
     messageEl.textContent = '';
     resetBtn.classList.remove('game-over-btn');
     boardEl.style.pointerEvents = 'auto';
@@ -53,7 +55,7 @@ function updateStatus() {
 
 function renderBoard() {
     boardEl.innerHTML = '';
-    const validMoves = (currentPlayer === BLACK && !isAiThinking) ? getValidMoves(board, BLACK) : [];
+    const validMoves = (currentPlayer === BLACK && !isAiThinking && !isGameOver) ? getValidMoves(board, BLACK) : [];
 
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
@@ -76,7 +78,7 @@ function renderBoard() {
 }
 
 function handleCellClick(r, c) {
-    if (currentPlayer !== BLACK || isAiThinking) return;
+    if (isGameOver || currentPlayer !== BLACK || isAiThinking) return;
 
     if (makeMove(board, r, c, BLACK)) {
         messageEl.textContent = '';
@@ -133,6 +135,7 @@ function checkPass(player) {
             boardEl.style.pointerEvents = 'auto';
         }
     } else {
+        isGameOver = true;
         const scores = calculateScores();
         const winner = scores.black > scores.white ? '黒' : (scores.white > scores.black ? '白' : '引き分け');
         messageEl.textContent = `ゲーム終了！ 勝者: ${winner} (黒:${scores.black} 白:${scores.white})`;
