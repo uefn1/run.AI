@@ -187,7 +187,7 @@ function canPlace(board, r, c, player) {
 }
 
 function makeMove(board, r, c, player) {
-    if (!canPlace(board, r, c, player)) return false;
+    if (!canPlace(board, r}, c, player)) return false;
     board[r][c] = player;
     const opponent = -player;
     const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,-1], [1,0], [1,1]];
@@ -365,6 +365,8 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
+resetBtn.onclick = () => {
+    initGame();
+};
 
 initGame();
