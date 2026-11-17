@@ -313,7 +313,7 @@ function getStableDiscs(board) {
                     stableDiscs[r][c] = true;
                     changed = true;
                 } else {
-                    // Not stable yet, but we will check again in the next iteration
+                    // Not stable yet
                 }
             }
         }
@@ -334,7 +334,7 @@ function isDiscStable(board, stable, r, c) {
             nr += dr; nc += dc;
         }
         if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) return false;
-    } 
+    }
     return true;
 }
 
@@ -349,5 +349,8 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
+resetBtn.onclick = () => {
+    initGame();
+};
+
 initGame();
