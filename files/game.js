@@ -102,6 +102,7 @@ function startAiTurn() {
 }
 
 function aiMove() {
+    if (isGameOver) return; // Guard against reset during timeout
     const bestMove = getBestMove(board, WHITE);
     if (bestMove) {
         makeMove(board, bestMove.r, bestMove.c, WHITE);
@@ -295,7 +296,7 @@ function evaluateBoard(board) {
     else {
         const whiteMoves = getValidMoves(board, WHITE).length;
         const blackMoves = getValidMoves(board, BLACK).length;
-        score += (whiteMoves - blackMoves) * 20;
+        score += (whiteMoves - blackMoves) * 25; // Increased mobility weight
     }
     return score;
 }
