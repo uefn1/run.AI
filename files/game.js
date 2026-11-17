@@ -328,9 +328,6 @@ function getStableDiscs(board) {
                 if (isDiscStable(board, stable, r, c)) {
                     stable[r][c] = true;
                     changed = true;
-                } else {
-                    // 安定石判定を更新するために、一旦falseにリセットして再チェック
-                    // 実際には安定石でないことが判明したら、sable[r][c] = false 保持でOK
                 }
             }
         }
@@ -362,14 +359,12 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            else if (board[r][c] === WHITE) white++;
+            if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
+resetBtn.onclick = initGame;
 
 initGame();

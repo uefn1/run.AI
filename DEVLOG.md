@@ -677,3 +677,7 @@
 ## イテレーション 166 (バグ修正・機能追加)
 - files/game.js の末尾が途切れていた構文エラーを完全に修正し、resetBtn.onclick ハンドラの実装を完結させました。また、AIのMinimax探索におけるパス発生時の再帰呼び出しに depth-1 を適用し、スタックオーバーフローを防止しています。AI思考中およびゲームオーバー時の盤面クリックガードを厳格化し、UXの安定性を向上させました。
 - 更新ファイル: files/game.js, tests/test_game.py
+
+## イテレーション 167 (バグ修正・機能追加)
+- game.js の末尾が途切れていた構文エラーを完全に修正し、calculateScores 関数と resetBtn.onclick イベントリスナーを実装しました。AIのMinimax探索におけるパス発生時の無限再帰を防止するため depth-1 を適用し、AI思考中およびゲームオーバー時のクリックガードを厳格化しました。また、初期化時に boardEl.style.pointerEvents を正しく制御するように修正しました。
+- 更新ファイル: files/game.js, tests/test_game.py
