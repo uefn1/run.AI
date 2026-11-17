@@ -23,13 +23,12 @@ def test_othello():
         assert hint_cells.count() > 0
         hint_cells.first.click()
         
-        # Wait for transition and AI thinking
-        page.wait_for_timeout(1000)
-        assert "AIが思考中..." in page.inner_text("#turn-indicator")
+        # Wait for transition to AI
+        page.wait_for_selector("text=AIが思考中...")
         
-        # Wait for AI turn to end
-        page.wait_for_timeout(2000)
-        assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
+        # Wait for AI turn to end and player turn to return
+        # Using a longer timeout for AI calculation
+        page.wait_for_selector("text=あなたの番です (黒)", timeout=5000)
         
         # Score Change
         black_score = int(page.inner_text("#black-score"))
