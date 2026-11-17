@@ -139,6 +139,7 @@ function checkPass(player) {
         turnIndicator.textContent = "Game Over";
         resetBtn.classList.add('game-over-btn');
         boardEl.style.pointerEvents = 'none';
+        updateStatus();
         renderBoard();
     }
 }
