@@ -209,7 +209,7 @@ function applyMove(board, r, c, player) {
     const opponent = -player;
     const flipped = [];
     board[r][c] = player;
-    const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,0], [1,1]];
+    const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,0], [1,1], [1,1]];
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
         let cellsToFlip = [];
@@ -365,8 +365,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
+resetBtn.onclick = initGame;
 
 initGame();

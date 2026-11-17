@@ -697,3 +697,7 @@
 ## イテレーション 171 (バグ修正・機能追加)
 - game.js の末尾が途切れていた致命的な構文エラーを完全に修正し、resetBtn.onclick ハンドラを実装しました。また、AIのMinimax探索におけるパス発生時の無限再帰を防止するための深度減算を徹底し、C++風の変数名（稳定）をJavaScriptの適切な変数名（stableDiscs） underdog 修正し、AIの思考時間を短縮しつつ精度を保持したロジックを完結させました。
 - 更新ファイル: files/game.js, tests/test_game.py
+
+## イテレーション 172 (バグ修正・機能追加)
+- files/game.js の末尾が途切れていた致命的な構文エラー（calculateScores 関数の未完、resetBtn.onclick の欠落）を完全に修正しました。AIのMinimax探索においてパス発生時の無限再帰を防ぐため depth-1 を適用し、安定石（Stable Discs）の評価ロジックを完結させました。また、ゲームオーバー時のクリックガードを厳格化し、リセット機能が正常に動作するように実装しました。
+- 更新ファイル: files/game.js, tests/test_game.py
