@@ -39,6 +39,7 @@ def test_othello():
         
         # Reset Action
         page.click("#reset-btn")
+        page.wait_for_selector("text=あなたの番です (黒)")
         assert page.inner_text("#black-score") == "2"
         assert page.inner_text("#white-score") == "2"
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
