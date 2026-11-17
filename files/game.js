@@ -86,7 +86,6 @@ function handleCellClick(r, c) {
         updateStatus();
         renderBoard();
         
-        // 視覚的なアニメーション時間を待ってからAIに移行
         setTimeout(() => {
             if (canMove(board, WHITE)) {
                 startAiTurn();
@@ -366,4 +365,5 @@ function calculateScores() {
 }
 
 resetBtn.onclick = initGame;
-initGame();
+
+window.onload = initGame;
