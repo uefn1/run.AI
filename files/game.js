@@ -86,11 +86,14 @@ function handleCellClick(r, c) {
         updateStatus();
         renderBoard();
         
-        if (canMove(board, WHITE)) {
-            startAiTurn();
-        } else {
-            checkPass(WHITE);
-        }
+        // 視覚的なアニメーション時間を待ってからAIに移行
+        setTimeout(() => {
+            if (canMove(board, WHITE)) {
+                startAiTurn();
+            } else {
+                checkPass(WHITE);
+            }
+        }, 400);
     }
 }
 
