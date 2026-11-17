@@ -210,8 +210,10 @@ function applyMove(board, r, c, player) {
             nr += dr; nc += dc;
         }
         if (cellsToFlip.length > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
-            for (let cell of cellsToFlip) board[cell.r][cell.c] = player;
-            flipped.push(...cellsToFlip);
+            for (let cell of cellsToFlip) {
+                board[cell.r][cell.c] = player;
+                flipped.push(cell);
+            }
         }
     }
     return flipped;
