@@ -63,23 +63,16 @@ function renderBoard() {
             cell.className = 'cell';
             if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
-            } else {
-                cell.onclick = () => handleCellClick(r, c);
             }
             const piece = document.createElement('div');
             piece.className = 'piece';
             if (board[r][c] === BLACK) piece.classList.add('black');
             if (board[r][c] === WHITE) piece.classList.add('white');
             cell.appendChild(piece);
+            cell.onclick = () => handleCellClick(r, c);
             boardEl.appendChild(cell);
         }
     }
-    // Overwrite onclick for all cells to handle clicks reliably
-    boardEl.querySelectorAll('.cell').forEach((cell, idx) => {
-        const r = Math.floor(idx / BOARD_SIZE);
-        const c = idx % BOARD_SIZE;
-        cell.onclick = () => handleCellClick(r, c);
-    });
 }
 
 function handleCellClick(r, c) {
@@ -162,7 +155,7 @@ function getValidMoves(board, player) {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (canPlace(board, r, c, player)) moves.push({ r, c });
-        } 
+        }
     }
     return moves;
 }
@@ -261,7 +254,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
         for (let move of moves) {
             const flipped = applyMove(board, move.r, move.c, WHITE);
             const evaluation = minimax(board, depth - 1, alpha, beta, false);
-            undoMove(board, move.r, move.c, WHITE, flipped); 
+            undoMove(board, move.r, move.c, WHITE, flipped);
             maxEval = Math.max(maxEval, evaluation);
             alpha = Math.max(alpha, evaluation);
             if (beta <= alpha) break;
@@ -312,13 +305,13 @@ function getStableDiscs(board) {
     while (changed) {
         changed = false;
         for (let r = 0; r < BOARD_SIZE; r++) {
-        for (let c = 0; c < BOARD_SIZE; c++) {
-            if (board[r][c] === EMPTY || stableDiscs[r][c]) continue;
-            if (isDiscStable(board, stableDiscs, r, c)) {
-                stableDiscs[r][c] = true;
-                changed = true;
+            for (let c = 0; c < BOARD_SIZE; c++) {
+                if (board[r][c] === EMPTY || stableDiscs[r][c]) continue;
+                if (isDiscStable(board, stableDiscs, r, c)) {
+                    stableDiscs[r][c] = true;
+                    changed = true;
+                }
             }
-        }
         }
     }
     return stableDiscs;
@@ -346,7 +339,7 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
