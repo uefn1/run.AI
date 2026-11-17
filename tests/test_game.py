@@ -24,7 +24,7 @@ def test_othello():
         hint_cells.first.click()
         
         # Wait for transition to AI
-        page.wait_for_selector("text=AIが思考中...")
+        page.wait_for_selector("text=AIが思考中...", timeout=5000)
         
         # Wait for AI turn to end and player turn to return
         page.wait_for_selector("text=あなたの番です (黒)", timeout=10000)
