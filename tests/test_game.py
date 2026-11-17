@@ -39,7 +39,7 @@ def test_othello():
         # Reset Action
         page.click("#reset-btn")
         assert page.inner_text("#black-score") == "2"
-        assert page.inner_text("#white-score") == "es");
+        assert page.inner_text("#white-score") == "2"
         
         if errors:
             print("Console errors found:", errors)
