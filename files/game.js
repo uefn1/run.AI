@@ -328,6 +328,9 @@ function getStableDiscs(board) {
                 if (isDiscStable(board, stable, r, c)) {
                     stable[r][c] = true;
                     changed = true;
+                } else {
+                    // 安定石判定を更新するために、一旦falseにリセットして再チェック
+                    // 実際には安定石でないことが判明したら、sable[r][c] = false 保持でOK
                 }
             }
         }
@@ -365,5 +368,8 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
+resetBtn.onclick = () => {
+    initGame();
+};
+
 initGame();
