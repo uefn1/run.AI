@@ -259,10 +259,8 @@ function evaluateBoard(board) {
         score += (whitePieces - blackPieces) * 50;
     } else {
         const whiteMoves = getValidMoves(board, WHITE).length;
-        const whiteMobility = whiteMoves > 0 ? 1 : 0;
         const blackMoves = getValidMoves(board, BLACK).length;
-        const blackMobility = blackMoves > 0 ? 1 : 0;
-        score += (whiteMobility - blackMobility) * 20;
+        score += (whiteMoves - blackMoves) * 20;
     }
     return score;
 }
@@ -273,13 +271,14 @@ function getStableDiscs(board) {
     while (changed) {
         changed = false;
         for (let r = 0; r < BOARD_SIZE; r++) {
-        for (let c = 0; c < BOARD_SIZE; c++) {
-            if (board[r][c] === EMPTY || stable[r][c]) continue;
-            if (isDiscStable(board, stable, r, c)) {
-                stable[r][c] = true;
-                changed = true;
+            for (let c = 0; c < BOARD_SIZE; c++) {
+                if (board[r][c] === EMPTY || stable[r][c]) continue;
+                if (isDiscStable(board, stable, r, c)) {
+                    stable[r][c] = true;
+                    changed = true;
+                }
             }
-        } }
+        }
     }
     return stable;
 }
@@ -307,9 +306,9 @@ function calculateScores() {
     let black = 0, white = 0;
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
-        if (board[r][c] === BLACK) { black++; }
-        if (board[r][c] === WHITE) { white++; }
-        } }
+            if (board[r][c] === BLACK) { black++; }
+            if (board[r][c] === WHITE) { white++; }
+        }
     }
     return { black, white };
 }
@@ -318,7 +317,11 @@ function updateStatus() {
     const scores = calculateScores();
     blackScoreEl.textContent = scores.black;
     whiteScoreEl.textContent = scores.white;
-    turnIndicator.textContent = currentPlayer === BLACK ? "あなたの番です (黒)" : "AIの番です (白)";
+    if (currentPlayer === BLACK) {
+        turnIndicator.textContent = "あなたの番です (黒)";
+    } else {
+        turnIndicator.textContent = "AIの番です (白)";
+    }
 }
 
 resetBtn.onclick = initGame;
