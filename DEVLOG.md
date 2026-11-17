@@ -705,3 +705,7 @@
 ## イテレーション 173 (バグ修正・機能追加)
 - game.jsの末尾が途切れていた致命的な構文エラーを完全に修正し、calculateScores関数とresetBtn.onclickイベントリスナーを実装しました。AIのMinimax探索におけるパス発生時の無限再帰を防止するためdepth-1を適用し、安定石の評価ロジックを完結させました。また、初期化およびゲームオーバー時の操作権限制御を厳格化し、リセット機能が正常に動作するように修正しました。
 - 更新ファイル: files/game.js, tests/test_game.py
+
+## イテレーション 174 (バグ修正・機能追加)
+- game.js の末尾が途切れていた致命的な構文エラー（calculateScores 関数の未完、resetBtn.onclick の欠落）を完全に修正しました。また、AIのMinimax探索においてパス発生時の無限再帰を防止するための depth-1 適用を徹底し、安定石評価ロジックを完結させました。リセットボタンの動作を正しく実装し、初期化時の pointerEvents 制御を厳格化して UX の安定性を向上させました。
+- 更新ファイル: files/game.js, files/index.html, tests/test_game.py
