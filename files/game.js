@@ -248,13 +248,16 @@ function getBestMove(board, player) {
 
 function minimax(board, depth, alpha, beta, isMaximizing) {
     if (depth === 0) return evaluateBoard(board);
-    const currentPlayer = isMaximizing ? WHITE : BLACK;
-    const moves = getValidMoves(board, currentPlayer);
+    
+    const player = isMaximizing ? WHITE : BLACK;
+    const moves = getValidMoves(board, player);
+    
     if (moves.length === 0) {
-        const opponent = -currentPlayer;
+        const opponent = -player;
         if (!canMove(board, opponent)) return evaluateBoard(board);
         return minimax(board, depth - 1, alpha, beta, !isMaximizing);
     }
+
     if (isMaximizing) {
         let maxEval = -Infinity;
         for (let move of moves) {
