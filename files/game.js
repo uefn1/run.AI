@@ -232,7 +232,7 @@ function getBestMove(board, player) {
     if (moves.length === 0) return null;
     
     const totalPieces = board.flat().filter(p => p !== EMPTY).length;
-    const depth = totalPieces > 40 ? 6 : 4;
+    const depth = totalPieces > 45 ? 6 : (totalPieces > 30 ? 4 : 3);
 
     let bestScore = -Infinity, bestMove = moves[0];
     for (let move of moves) {
@@ -292,11 +292,11 @@ function evaluateBoard(board) {
             if (board[r][c] === WHITE) {
                 score += weights[r][c];
                 whitePieces++;
-                if (stable[r][c]) score += 60;
+                if (stable[r][c]) score += 100;
             } else if (board[r][c] === BLACK) {
                 score -= weights[r][c];
                 blackPieces++;
-                if (stable[r][c]) score -= 60;
+                if (stable[r][c]) score -= 100;
             }
         }
     }
