@@ -81,6 +81,7 @@ function handleCellClick(r, c) {
     if (isGameOver || currentPlayer !== BLACK || isAiThinking) return;
 
     if (makeMove(board, r, c, BLACK)) {
+        boardEl.style.pointerEvents = 'none';
         messageEl.textContent = '';
         currentPlayer = WHITE;
         updateStatus();
@@ -110,12 +111,12 @@ function aiMove() {
         makeMove(board, bestMove.r, bestMove.c, WHITE);
         currentPlayer = BLACK;
         isAiThinking = false;
-        boardEl.style.pointerEvents = 'auto';
         
         if (canMove(board, BLACK)) {
             messageEl.textContent = '';
             updateStatus();
             renderBoard();
+            boardEl.style.pointerEvents = 'auto';
         } else {
             checkPass(BLACK);
         }
