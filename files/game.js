@@ -312,6 +312,8 @@ function getStableDiscs(board) {
                 if (isDiscStable(board, stableDiscs, r, c)) {
                     stableDiscs[r][c] = true;
                     changed = true;
+                } else {
+                    // Not stable yet, but we will check again in the next iteration
                 }
             }
         }
@@ -332,7 +334,7 @@ function isDiscStable(board, stable, r, c) {
             nr += dr; nc += dc;
         }
         if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) return false;
-    }
+    } 
     return true;
 }
 

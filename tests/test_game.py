@@ -1,5 +1,6 @@
 from playwright.sync_api import sync_playwright
 from pathlib import Path
+import time
 
 def test_othello():
     with sync_playwright() as p:
@@ -41,7 +42,7 @@ def test_othello():
         page.click("#reset-btn")
         page.wait_for_selector("text=あなたの番です (黒)")
         assert page.inner_text("#black-score") == "2"
-        assert page.inner_text("#white-score") == "2"
+        assert page.inner_text("#white-score") "== "2"
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
         if errors:
