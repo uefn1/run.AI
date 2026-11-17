@@ -63,13 +63,11 @@ function renderBoard() {
             cell.className = 'cell';
             if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
-            } 
-            
+            }
             const piece = document.createElement('div');
             piece.className = 'piece';
             if (board[r][c] === BLACK) piece.classList.add('black');
             if (board[r][c] === WHITE) piece.classList.add('white');
-            
             cell.appendChild(piece);
             cell.onclick = () => handleCellClick(r, c);
             boardEl.appendChild(cell);
@@ -79,14 +77,12 @@ function renderBoard() {
 
 function handleCellClick(r, c) {
     if (isGameOver || currentPlayer !== BLACK || isAiThinking) return;
-
     if (makeMove(board, r, c, BLACK)) {
         boardEl.style.pointerEvents = 'none';
         messageEl.textContent = '';
         currentPlayer = WHITE;
         updateStatus();
         renderBoard();
-        
         setTimeout(() => {
             if (canMove(board, WHITE)) {
                 startAiTurn();
@@ -111,7 +107,6 @@ function aiMove() {
         makeMove(board, bestMove.r, bestMove.c, WHITE);
         currentPlayer = BLACK;
         isAiThinking = false;
-        
         if (canMove(board, BLACK)) {
             messageEl.textContent = '';
             updateStatus();
@@ -159,9 +154,7 @@ function getValidMoves(board, player) {
     const moves = [];
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
-            if (canPlace(board, r, c, player)) {
-                moves.push({ r, c });
-            }
+            if (canPlace(board, r, c, player)) moves.push({ r, c });
         }
     }
     return moves;
@@ -171,7 +164,6 @@ function canPlace(board, r, c, player) {
     if (board[r][c] !== EMPTY) return false;
     const opponent = -player;
     const directions = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
-    
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
         let hasOpponentBetween = false;
@@ -179,9 +171,7 @@ function canPlace(board, r, c, player) {
             nr += dr; nc += dc;
             hasOpponentBetween = true;
         }
-        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
-            return true;
-        }
+        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) return true;
     }
     return false;
 }
@@ -229,18 +219,14 @@ function applyMove(board, r, c, player) {
 
 function undoMove(board, r, c, player, flipped) {
     board[r][c] = EMPTY;
-    for (let cell of flipped) {
-        board[cell.r][cell.c] = -player;
-    }
+    for (let cell of flipped) board[cell.r][cell.c] = -player;
 }
 
 function getBestMove(board, player) {
     const moves = getValidMoves(board, player);
     if (moves.length === 0) return null;
-    
     const totalPieces = board.flat().filter(p => p !== EMPTY).length;
     const depth = totalPieces > 45 ? 6 : (totalPieces > 30 ? 4 : 3);
-
     let bestScore = -Infinity, bestMove = moves[0];
     for (let move of moves) {
         const flipped = applyMove(board, move.r, move.c, player);
@@ -256,16 +242,13 @@ function getBestMove(board, player) {
 
 function minimax(board, depth, alpha, beta, isMaximizing) {
     if (depth === 0) return evaluateBoard(board);
-    
     const player = isMaximizing ? WHITE : BLACK;
     const moves = getValidMoves(board, player);
-    
     if (moves.length === 0) {
         const opponent = -player;
         if (!canMove(board, opponent)) return evaluateBoard(board);
         return minimax(board, depth - 1, alpha, beta, !isMaximizing);
     }
-
     if (isMaximizing) {
         let maxEval = -Infinity;
         for (let move of moves) {
@@ -307,9 +290,8 @@ function evaluateBoard(board) {
             }
         }
     }
-    if (whitePieces + blackPieces > 45) {
-        score += (whitePieces - blackPieces) * 50;
-    } else {
+    if (whitePieces + blackPieces > 45) score += (whitePieces - blackPieces) * 50;
+    else {
         const whiteMoves = getValidMoves(board, WHITE).length;
         const blackMoves = getValidMoves(board, BLACK).length;
         score += (whiteMoves - blackMoves) * 20;
@@ -329,7 +311,8 @@ function getStableDiscs(board) {
                     stableDiscs[r][c] = true;
                     changed = true;
                 }
-            }        }
+            }
+        }
     }
     return stableDiscs;
 }
@@ -342,9 +325,7 @@ function isDiscStable(board, stable, r, c) {
         let nr = r + dr, nc = c + dc;
         let hasOpponent = false;
         while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
-            if (board[nr][nc] === opponent && !stable[nr][nc]) {
-                hasOpponent = true;
-            }
+            if (board[nr][nc] === opponent && !stable[nr][nc]) hasOpponent = true;
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
@@ -364,8 +345,5 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
-
+resetBtn.onclick = initGame;
 initGame();
