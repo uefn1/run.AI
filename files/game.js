@@ -63,7 +63,7 @@ function renderBoard() {
             cell.className = 'cell';
             if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
-            }
+            } 
             
             const piece = document.createElement('div');
             piece.className = 'piece';
@@ -209,7 +209,7 @@ function applyMove(board, r, c, player) {
     const opponent = -player;
     const flipped = [];
     board[r][c] = player;
-    const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,-1], [1,0], [1,1]];
+    const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,0], [1,1]];
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
         let cellsToFlip = [];
@@ -281,7 +281,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
         let minEval = Infinity;
         for (let move of moves) {
             const flipped = applyMove(board, move.r, move.c, BLACK);
-            const evaluation = minimax(board, depth - 1, alpha, beta, true);
+            const evaluation = minimax(board, depth - 1, alpha, beta, false);
             undoMove(board, move.r, move.c, BLACK, flipped);
             minEval = Math.min(minEval, evaluation);
             beta = Math.min(beta, evaluation);
@@ -318,21 +318,21 @@ function evaluateBoard(board) {
 }
 
 function getStableDiscs(board) {
-    const stable = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(false));
+    const稳定 = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(false));
     let changed = true;
     while (changed) {
         changed = false;
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
-                if (board[r][c] === EMPTY || stable[r][c]) continue;
-                if (isDiscStable(board, stable, r, c)) {
-                    stable[r][c] = true;
+                if (board[r][c] === EMPTY || 稳定[r][c]) continue;
+                if (isDiscStable(board, 稳定, r, c)) {
+                    稳定[r][c] = true;
                     changed = true;
                 }
             }
         }
     }
-    return stable;
+    return 稳定;
 }
 
 function isDiscStable(board, stable, r, c) {
