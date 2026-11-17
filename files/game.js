@@ -172,6 +172,7 @@ function makeMove(board, r, c, player) {
     board[r][c] = player;
     const opponent = -player;
     const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,-1], [1,0], [1,1]];
+    const flipped = [];
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
         let cellsToFlip = [];
@@ -181,9 +182,38 @@ function makeMove(board, r, c, player) {
         }
         if (cellsToFlip.length > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
             for (let cell of cellsToFlip) board[cell.r][cell.c] = player;
+            flipped.push(...cellsToFlip);
         }
     }
     return true;
+}
+
+// AI-specific function for backtracking to avoid cloning
+function applyMove(board, r, c, player) {
+    const opponent = -player;
+    const flipped = [];
+    board[r][c] = player;
+    const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,-1], [1,0], [1,1]];
+    for (let [dr, dc] of directions) {
+        let nr = r + dr, nc = c + dc;
+        let cellsToFlip = [];
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
+            cellsToFlip.push({ r: nr, c: nc });
+            nr += dr; nc += dc;
+        }
+        if (cellsToFlip.length > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
+            for (let cell of cellsToFlip) board[cell.r][cell.c] = player;
+            flipped.push(...cellsToFlip);
+        }
+    }
+    return flipped;
+}
+
+function undoMove(board, r, c, player, flipped) {
+    board[r][c] = EMPTY;
+    for (let cell of flipped) {
+        board[cell.r][cell.c] = -player;
+    }
 }
 
 function getBestMove(board, player) {
@@ -195,9 +225,9 @@ function getBestMove(board, player) {
 
     let bestScore = -Infinity, bestMove = moves[0];
     for (let move of moves) {
-        const tempBoard = board.map(row => [...row]);
-        makeMove(tempBoard, move.r, move.c, player);
-        const score = minimax(tempBoard, depth, -Infinity, Infinity, false);
+        const flipped = applyMove(board, move.r, move.c, player);
+        const score = minimax(board, depth, -Infinity, Infinity, false);
+        undoMove(board, move.r, move.c, player, flipped);
         if (score > bestScore) {
             bestScore = score;
             bestMove = move;
@@ -214,13 +244,13 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
         const opponent = -currentPlayer;
         if (!canMove(board, opponent)) return evaluateBoard(board);
         return minimax(board, depth - 1, alpha, beta, !isMaximizing);
-    }
+    } 
     if (isMaximizing) {
         let maxEval = -Infinity;
         for (let move of moves) {
-            const tempBoard = board.map(row => [...row]);
-            makeMove(tempBoard, move.r, move.c, WHITE);
-            const evaluation = minimax(tempBoard, depth - 1, alpha, beta, false);
+            const flipped = applyMove(board, move.r, move.c, WHITE);
+            const evaluation = minimax(board, depth - 1, alpha, beta, false);
+            undoMove(board, move.r, move.c, WHITE, flipped);
             maxEval = Math.max(maxEval, evaluation);
             alpha = Math.max(alpha, evaluation);
             if (beta <= alpha) break;
@@ -229,9 +259,9 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
     } else {
         let minEval = Infinity;
         for (let move of moves) {
-            const tempBoard = board.map(row => [...row]);
-            makeMove(tempBoard, move.r, move.c, BLACK);
-            const evaluation = minimax(tempBoard, depth - 1, alpha, beta, true);
+            const flipped = applyMove(board, move.r, move.c, BLACK);
+            const evaluation = minimax(board, depth - 1, alpha, beta, true);
+            undoMove(board, move.r, move.c, BLACK, flipped);
             minEval = Math.min(minEval, evaluation);
             beta = Math.min(beta, evaluation);
             if (beta <= alpha) break;
@@ -277,8 +307,19 @@ function getStableDiscs(board) {
                 if (isDiscStable(board, stable, r, c)) {
                     stable[r][c] = true;
                     changed = true;
+                } else {
+                    // To prevent infinite loop in some rare cases, we just mark as stable if it's a corner
+                    if (board[r][c] === WHITE || board[r][c] === BLACK) {
+                        // Corner pieces are always stable
+                        if ((r === 0 || r === 7) && (c === 0 || c === 7)) {
+                            stable[r][c] = true;
+                            changed = true;
+                        } else {
+                            // Just a fallback to avoid potential infinite loops
+                        }
+                    }
                 }
-            }
+            } 
         }
     }
     return stable;
@@ -294,7 +335,7 @@ function isDiscStable(board, stable, r, c) {
         while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
             if (board[nr][nc] === opponent && !stable[nr][nc]) {
                 hasOpponent = true;
-            }
+            } 
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
@@ -307,8 +348,8 @@ function calculateScores() {
     let black = 0, white = 0;
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
-            if (board[r][c] === BLACK) { black++; }
-            if (board[r][c] === WHITE) { white++; }
+        if (board[r][c] === BLACK) { black++; }
+        if (board[r][c] === WHITE) { white++; }
         }
     }
     return { black, white };
