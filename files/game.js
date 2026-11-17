@@ -130,7 +130,7 @@ function checkPass(player) {
         updateStatus();
         renderBoard();
         if (currentPlayer === WHITE) {
-            startAiTurn();
+            setTimeout(startAiTurn, 1000);
         } else {
             boardEl.style.pointerEvents = 'auto';
         }
