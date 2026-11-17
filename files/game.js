@@ -366,4 +366,5 @@ function calculateScores() {
 }
 
 resetBtn.onclick = initGame;
-window.onload = initGame;
+
+initGame();
