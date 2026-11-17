@@ -84,6 +84,7 @@ function handleCellClick(r, c) {
         updateStatus();
         renderBoard();
         setTimeout(() => {
+            if (isGameOver) return; // Guard for reset during timeout
             if (canMove(board, WHITE)) {
                 startAiTurn();
             } else {
@@ -102,7 +103,7 @@ function startAiTurn() {
 }
 
 function aiMove() {
-    if (isGameOver || currentPlayer !== WHITE) return;
+    if (isGameOver || currentPlayer !== WHITE || !isAiThinking) return;
     const bestMove = getBestMove(board, WHITE);
     if (bestMove) {
         makeMove(board, bestMove.r, bestMove.c, WHITE);

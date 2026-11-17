@@ -1,6 +1,5 @@
 from playwright.sync_api import sync_playwright
 from pathlib import Path
-import time
 
 def test_othello():
     with sync_playwright() as p:
@@ -38,7 +37,7 @@ def test_othello():
         white_score = int(page.inner_text("#white-score"))
         assert black_score + white_score > 4
         
-        # Reset Action
+        # Reset Action during AI thinking might be tricky, but let's test general reset
         page.click("#reset-btn")
         page.wait_for_selector("text=あなたの番です (黒)")
         assert page.inner_text("#black-score") == "2"
