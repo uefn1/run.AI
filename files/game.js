@@ -157,8 +157,7 @@ function getValidMoves(board, player) {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (canPlace(board, r, c, player)) moves.push({ r, c });
-        }
-    }
+        }    }
     return moves;
 }
 
@@ -186,9 +185,9 @@ function makeMove(board, r, c, player) {
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
         let cellsToFlip = [];
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
-            cellsToFlip.push({ r: nr, c: nc });
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nr < BOARD_SIZE && board[nr][nc] === opponent) {
             nr += dr; nc += dc;
+            cellsToFlip.push({ r: nr, c: nc });
         }
         if (cellsToFlip.length > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
             for (let cell of cellsToFlip) board[cell.r][cell.c] = player;
@@ -205,15 +204,13 @@ function applyMove(board, r, c, player) {
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
         let cellsToFlip = [];
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nr < BOARD_SIZE && board[nr][nc] === opponent) {
             cellsToFlip.push({ r: nr, c: nc });
             nr += dr; nc += dc;
         }
         if (cellsToFlip.length > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
-            for (let cell of cellsToFlip) {
-                board[cell.r][cell.c] = player;
-                flipped.push(cell);
-            }
+            for (let cell of cellsToFlip) board[cell.r][cell.c] = player;
+            flipped.push(...cellsToFlip);
         }
     }
     return flipped;
@@ -267,7 +264,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
         for (let move of moves) {
             const flipped = applyMove(board, move.r, move.c, BLACK);
             const evaluation = minimax(board, depth - 1, alpha, beta, true);
-            undoMove(board, move.r, move.c, BLACK, flipped);
+            undoMove(board, move.r, move.c, BLACK, flipped); 
             minEval = Math.min(minEval, evaluation);
             beta = Math.min(beta, evaluation);
             if (beta <= alpha) break;
@@ -312,8 +309,6 @@ function getStableDiscs(board) {
                 if (isDiscStable(board, stableDiscs, r, c)) {
                     stableDiscs[r][c] = true;
                     changed = true;
-                } else {
-                    // Not stable yet
                 }
             }
         }
@@ -352,5 +347,3 @@ function calculateScores() {
 resetBtn.onclick = () => {
     initGame();
 };
-
-initGame();
