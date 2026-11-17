@@ -138,7 +138,8 @@ function checkPass(player) {
         isGameOver = true;
         const scores = calculateScores();
         const winner = scores.black > scores.white ? '黒' : (scores.white > scores.black ? '白' : '引き分け');
-        messageEl.textContent = `ゲーム終了！ 勝者: ${winner} (黒:${scores.black} 白:${scores.white})`;
+        const diff = Math.abs(scores.black - scores.white);
+        messageEl.textContent = `ゲーム終了！ 勝者: ${winner} (黒:${scores.black} 白:${scores.white} 差:${diff})`;
         turnIndicator.textContent = "Game Over";
         resetBtn.classList.add('game-over-btn');
         boardEl.style.pointerEvents = 'none';
