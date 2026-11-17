@@ -262,8 +262,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
             if (beta <= alpha) break;
         }
         return maxEval;
-    }
- else {
+    } else {
         let minEval = Infinity;
         for (let move of moves) {
             const flipped = applyMove(board, move.r, move.c, BLACK);
@@ -350,6 +349,7 @@ function calculateScores() {
 }
 
 resetBtn.onclick = () => {
+    isAiThinking = false;
     initGame();
 };
 
