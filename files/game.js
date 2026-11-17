@@ -162,7 +162,8 @@ function getValidMoves(board, player) {
             if (canPlace(board, r, c, player)) {
                 moves.push({ r, c });
             }
-        }    }
+        }
+    }
     return moves;
 }
 
@@ -364,8 +365,5 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
-
+resetBtn.onclick = initGame;
 initGame();
