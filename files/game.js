@@ -102,7 +102,7 @@ function startAiTurn() {
 }
 
 function aiMove() {
-    if (isGameOver) return;
+    if (isGameOver || currentPlayer !== WHITE) return;
     const bestMove = getBestMove(board, WHITE);
     if (bestMove) {
         makeMove(board, bestMove.r, bestMove.c, WHITE);
