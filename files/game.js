@@ -63,7 +63,7 @@ function renderBoard() {
             cell.className = 'cell';
             if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
-            } 
+            }
             
             const piece = document.createElement('div');
             piece.className = 'piece';
@@ -162,7 +162,8 @@ function getValidMoves(board, player) {
             if (canPlace(board, r, c, player)) {
                 moves.push({ r, c });
             }
-        }    }
+        }
+    }
     return moves;
 }
 
@@ -287,7 +288,8 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
             if (beta <= alpha) break;
         }
         return minEval;
-    }}
+    }
+}
 
 function evaluateBoard(board) {
     let score = 0, whitePieces = 0, blackPieces = 0;
@@ -363,8 +365,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
+resetBtn.onclick = initGame;
 
 initGame();
