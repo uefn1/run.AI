@@ -63,7 +63,7 @@ function renderBoard() {
             cell.className = 'cell';
             if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
-            }
+            } : null; // 修正: 三項演算子の不整合を修正
             
             const piece = document.createElement('div');
             piece.className = 'piece';
@@ -323,12 +323,11 @@ function getStableDiscs(board) {
     while (changed) {
         changed = false;
         for (let r = 0; r < BOARD_SIZE; r++) {
-            for (let c = 0; c < BOARD_SIZE; c++) {
-                if (board[r][c] === EMPTY || stable[r][c]) continue;
-                if (isDiscStable(board, stable, r, c)) {
-                    stable[r][c] = true;
-                    changed = true;
-                }
+        for (let c = 0; c < BOARD_SIZE; c++) {
+            if (board[r][c] === EMPTY || stable[r][c]) continue;
+            if (isDiscStable(board, stable, r, c)) {
+                stable[r][c] = true;
+                changed = true;
             }
         }
     }
@@ -365,6 +364,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
+resetBtn.onclick = () => initGame();
 
 initGame();

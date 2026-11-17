@@ -31,7 +31,7 @@ def test_othello():
         
         # Score Change
         black_score = int(page.inner_text("#black-score"))
-        white_score = int(page.inner_text("#white-score"))
+        white_score = int(page.inner_text("#white-score")
         assert black_score + white_score > 4
         
         # Reset Action

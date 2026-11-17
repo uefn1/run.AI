@@ -1,0 +1,4 @@
+  File "/home/runner/work/run.AI/run.AI/tests/test_game.py", line 34
+    white_score = int(page.inner_text("#white-score")
+                     ^
+SyntaxError: '(' was never closed
