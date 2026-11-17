@@ -13,30 +13,30 @@ def test_othello():
         html_path = (Path(__file__).resolve().parents[1] / "files" / "index.html").as_uri()
         page.goto(html_path)
         
-        # 初期状態の確認
+        # Initial State
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         assert page.inner_text("#black-score") == "2"
         assert page.inner_text("#white-score") == "2"
         
-        # プレイヤーが打てる場所をクリック
+        # User Move
         hint_cells = page.locator(".cell.hint")
         assert hint_cells.count() > 0
         hint_cells.first.click()
         
-        # AI思考状態の確認
+        # AI Thinking State
         page.wait_for_timeout(200)
         assert "AIが思考中..." in page.inner_text("#turn-indicator")
         
-        # AIのターンが終わり、プレイヤーに戻ったことを確認
+        # Wait for AI turn to end
         page.wait_for_timeout(1500)
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
-        # スコアが変動したことを確認
+        # Score Change
         black_score = int(page.inner_text("#black-score"))
         white_score = int(page.inner_text("#white-score"))
         assert black_score + white_score > 4
         
-        # リセットボタンの動作確認
+        # Reset Action
         page.click("#reset-btn")
         assert page.inner_text("#black-score") == "2"
         assert page.inner_text("#white-score") == "2"
