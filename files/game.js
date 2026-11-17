@@ -63,7 +63,7 @@ function renderBoard() {
             cell.className = 'cell';
             if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
-            } 
+            }
             
             const piece = document.createElement('div');
             piece.className = 'piece';
@@ -328,8 +328,6 @@ function getStableDiscs(board) {
                 if (isDiscStable(board, stable, r, c)) {
                     stable[r][c] = true;
                     changed = true;
-                } else {
-                    // This is a simplified version of stability check
                 }
             }
         }
@@ -347,7 +345,7 @@ function isDiscStable(board, stable, r, c) {
         while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
             if (board[nr][nc] === opponent && !stable[nr][nc]) {
                 hasOpponent = true;
-            } 
+            }
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
@@ -361,14 +359,12 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
+resetBtn.onclick = initGame;
 
 initGame();
