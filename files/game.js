@@ -307,7 +307,7 @@ function getStableDiscs(board) {
         changed = false;
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
-                if (board[r][c] === EMPTY || stableDiscs[r][c]) continue;
+                if (board[r][c] === EMPTY || stableDiscs[r][c] === true) continue;
                 if (isDiscStable(board, stableDiscs, r, c)) {
                     stableDiscs[r][c] = true;
                     changed = true;
