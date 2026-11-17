@@ -36,8 +36,8 @@ function initGame() {
     messageEl.textContent = '';
     resetBtn.classList.remove('game-over-btn');
     boardEl.style.pointerEvents = 'auto';
-    renderBoard();
     updateStatus();
+    renderBoard();
 }
 
 function updateStatus() {
