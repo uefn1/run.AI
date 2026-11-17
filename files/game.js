@@ -92,7 +92,7 @@ function handleCellClick(r, c) {
             } else {
                 checkPass(WHITE);
             }
-        }, 400);
+        }, 600);
     }
 }
 
