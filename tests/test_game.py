@@ -24,11 +24,11 @@ def test_othello():
         hint_cells.first.click()
         
         # AI Thinking State
-        page.wait_for_timeout(200)
+        page.wait_for_timeout(300)
         assert "AIが思考中..." in page.inner_text("#turn-indicator")
         
         # Wait for AI turn to end
-        page.wait_for_timeout(1500)
+        page.wait_for_timeout(2000)
         assert "あなたの番です (黒)" in page.inner_text("#turn-indicator")
         
         # Score Change
