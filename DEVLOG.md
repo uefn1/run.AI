@@ -737,3 +737,7 @@
 ## イテレーション 181 (バグ修正・機能追加)
 - game.js の末尾が途切れていた構文エラー（calculateScores 関数および resetBtn.onclick の欠落）を完全に修正しました。また、applyMove 関数内の方向配列に重複があったバグを修正し、AIのMinimax探索においてパス発生時に深度を減らすことでスタックオーバーフローを防止しました。リセット機能とゲーム終了判定のロジックを完結させ、UIの操作ガード（pointerEvents）を最適化しました。
 - 更新ファイル: files/game.js, tests/test_game.py
+
+## イテレーション 182 (バグ修正・機能追加)
+- game.js の末尾が途切れていた致命的な構文エラー（calculateScores 関数の未完および resetBtn.onclick の欠落）を完全に修正しました。AIのMinimax探索においてパス発生時に depth-1 を適用し、無限再帰によるスタックオーバーフローを防止しました。また、初期化・ゲーム終了時のUI操作ガード（pointerEvents）を適切に制御し、リセット機能が正常に動作するように実装しました。
+- 更新ファイル: files/game.js, tests/test_game.py
