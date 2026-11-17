@@ -125,6 +125,7 @@ function checkPass(player) {
     if (canMove(board, nextPlayer)) {
         messageEl.textContent = `${player === BLACK ? '黒' : '白'}はパスしました`;
         currentPlayer = nextPlayer;
+        isAiThinking = false;
         updateStatus();
         renderBoard();
         if (currentPlayer === WHITE) {
