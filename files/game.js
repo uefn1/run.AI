@@ -22,7 +22,7 @@ const weights = [
     [5, -2, 1, 0, 0, 1, -2, 5],
     [5, -2, 1, 0, 0, 1, -2, 5],
     [10, -2, 5, 1, 1, 5, -2, 10],
-    [-20, -50, -2, -2, -2, -50, -20],
+    [-20, -50, -2, -2, -2, -2, -50, -20],
     [100, -20, 10, 5, 5, 10, -20, 100]
 ];
 
@@ -162,8 +162,7 @@ function getValidMoves(board, player) {
             if (canPlace(board, r, c, player)) {
                 moves.push({ r, c });
             }
-        }
-    }
+        }    }
     return moves;
 }
 
@@ -187,7 +186,7 @@ function canPlace(board, r, c, player) {
 }
 
 function makeMove(board, r, c, player) {
-    if (!canPlace(board, r}, c, player)) return false;
+    if (!canPlace(board, r, c, player)) return false;
     board[r][c] = player;
     const opponent = -player;
     const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,-1], [1,0], [1,1]];
