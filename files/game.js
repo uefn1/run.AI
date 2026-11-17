@@ -291,7 +291,7 @@ function evaluateBoard(board) {
             }
         }
     }
-    if (whitePieces + blackPieces > 45) score += (whitePieces - blackPieces) * 50;
+    if (whitePieces + blackPieces > 40) score += (whitePieces - blackPieces) * 50;
     else {
         const whiteMoves = getValidMoves(board, WHITE).length;
         const blackMoves = getValidMoves(board, BLACK).length;
