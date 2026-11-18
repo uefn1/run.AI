@@ -269,7 +269,7 @@ function minimax(board, depth, alpha, beta, isMaximizing) {
             const evaluation = minimax(board, depth - 1, alpha, beta, true);
             undoMove(board, move.r, move.c, BLACK, flipped);
             minEval = Math.min(minEval, evaluation);
-            beta = Math.min(beta, evaluation);
+            beta = Math.min(beta, minEval);
             if (beta <= alpha) break;
         }
         return minEval;
@@ -349,7 +349,6 @@ function calculateScores() {
 }
 
 resetBtn.onclick = () => {
-    isAiThinking = false;
     initGame();
 };
 
