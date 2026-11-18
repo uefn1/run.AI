@@ -343,12 +343,14 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // Note: A disc is stable if there's no way to flip it. 
-            // This is a simplification; a truly stable disc cannot be flipped by any future move.
+            // This direction is open or blocked by stables, but we need to check if it can ever be flipped
+            // Actually, a simpler way: a disc is stable if it can't be flipped by any legal move.
+            // The logic above is a simplified heuristic. For true stability, a disc must not have any
+            // sequence of opponent discs ending in an empty square or opponent disc.
         }
     }
-    // Simplified stable check for AI: corners are always stable
-    return (r === 0 || r === BOARD_SIZE - 1) && (c === 0 || c === BOARD_SIZE - 1);
+    // Return false as default for simplicity in this version, as full stability check is recursive
+    return false;
 }
 
 function calculateScores() {
@@ -362,6 +364,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
+resetBtn.onclick = () => initGame();
 
 initGame();
