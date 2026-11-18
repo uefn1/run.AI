@@ -343,18 +343,22 @@ function isDiscStable(board, stable, r, c) {
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) {
-            // No player disc at the end of the line, but has opponent - may be stable
-        } else if (hasOpponent) {
-            // Has player disc at the end, so not stable in this direction
-        } else {
-            // No opponent, stable in this direction
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || !isDiscStableInDir(board, stable, r, c, dr, dc))) {
+             // Simplify stability check for weight efficiency
         }
     }
-    // Simpler stability: if it cannot be flipped by anyone, it's stable.
-    // The logic above is complex; for Othello, stable discs are those that can't be flipped.
-    // To keep it simple and avoid infinite loops/errors, we'll check if any move can flip it.
-    return false; // Fallback: assume not stable for simplicity unless perfectly implemented
+    // Actually, simple stability is: can it be flipped?
+    for (let [dr, dc] of directions) {
+        let nr = r + dr, nc = c + dc;
+        let hasOpponent = false;
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
+            if (board[nr][nc] === opponent && !stable[nr][nc]) hasOpponent = true;
+            if (board[nr][nc] === player) break;
+            nr += dr; nc += dc;
+        }
+        if (hasOpponent && (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player)) return false;
+    }
+    return true;
 }
 
 function calculateScores() {
@@ -362,12 +366,11 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
 resetBtn.onclick = initGame;
-
 initGame();
