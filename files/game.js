@@ -344,13 +344,13 @@ function isDiscStable(board, stable, r, c) {
             nr += dr; nc += dc;
         }
         if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // This doesn't strictly mean stable, but if it can't be flipped in this direction
+            // If there's an opponent in the path and we hit the wall or empty space, it's not stable via this direction
+            // But the logic here is: it is stable if for ALL directions, there's no way to flip it.
+            // Let's return false as soon as any direction can potentially flip it.
+            return false;
         }
-        // Actually a disc is stable if it can't be flipped in ANY direction
     }
-    // Simple stable check: if it's a corner it's stable. If all surrounding are stable, it's stable.
-    // For the sake of this AI, we'll use a basic approximation or skip if too complex.
-    return (r === 0 || r === 7) && (c === 0 || c === 7);
+    return true;
 }
 
 function calculateScores() {
