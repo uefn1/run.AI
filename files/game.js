@@ -351,7 +351,6 @@ function calculateScores() {
 }
 
 resetBtn.onclick = () => {
-    isAiThinking = false;
     initGame();
 };
 
