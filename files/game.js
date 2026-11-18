@@ -343,14 +343,10 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // This disc is not stable because it could potentially be flipped
-            // Simplified stability check: if it's on the edge and has no opponent pieces in a direction
-            // However, a full stable disc algorithm is getStableDiscs
+            return false;
         }
-    }    
-    // A disc is stable if it cannot be flipped by the opponent in any direction
-    // For simplicity, this is a simplified version of the return true/false
-    return false;
+    }
+    return true;
 }
 
 function calculateScores() {
@@ -364,6 +360,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.addEventListener('click', initGame);
+resetBtn.onclick = initGame;
 
 initGame();
