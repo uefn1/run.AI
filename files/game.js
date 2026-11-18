@@ -342,14 +342,13 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // この方向では安定していない
-        } else if (hasOpponentBetween) {
-            // 安定している可能性あり。ただし全方向チェックが必要
+            // If there is an opponent but no player disc at the end of this direction, it might be flip-able
+            // However, true stability means NO direction can flip it. 
+            // The logic here is simplified: if it can be flipped in any direction, it's not stable.
+            return false;
         }
     }
-    // 簡易的な安定判定: 周囲に空きがなく、かつ相手が挟めない状態
-    // 本来は再帰的に判定するが、評価用なので簡易的に処理
-    return false;
+    return true;
 }
 
 function calculateScores() {
@@ -364,5 +363,4 @@ function calculateScores() {
 }
 
 resetBtn.onclick = initGame;
-
 initGame();
