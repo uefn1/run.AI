@@ -343,16 +343,24 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // この方向にはもう自分の石を置く場所がないため、不安定な可能性がある
-        } else if (!hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // すでに端まで到達しているか空きがある
-        } else if (board[nr][nc] === player) {
-            // 自分の石があるためこの方向は安定
+            // If there is an opponent and the line ends or hits an empty space, it's not stable unless the end is occupied by same player
+            // Wait, the definition of stable is: a disc that can never be flipped.
+            // A disc is stable if it's a corner, or if it's connected to a stable disc of the same color
+            // via a line of discs (no gaps).
         }
     }
-    // 簡易的に、周囲が埋まっているか、自分の石で囲まれているか判定
-    // 本来はより厳密な判定が必要だが、パフォーマンスのため簡易化
-    return false; // 実際には再帰的に判定
+    // Simple stability: Corner
+    if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
+    // Connection to stable
+    const directions2 = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
+    for (let [dr, dc] of directions2) {
+        let nr = r + dr, nc = c + dc;
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] !== EMPTY) {
+            if (board[nr][nc] === player && stableDiscs[nr][nc]) return true;
+            nr += dr; nc += dc;
+        }
+    }
+    return false;
 }
 
 function calculateScores() {
