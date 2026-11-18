@@ -343,12 +343,8 @@ function isDiscStable(board, stable, r, c) {
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // If there's an opponent in the path and we hit the wall or empty space, it's not stable via this direction
-            // But the logic here is: it is stable if for ALL directions, there's no way to flip it.
-            // Let's return false as soon as any direction can potentially flip it.
-            return false;
-        }
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) continue;
+        if (hasOpponent) return false;
     }
     return true;
 }
@@ -358,12 +354,11 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
 resetBtn.onclick = initGame;
-
 initGame();
