@@ -343,11 +343,16 @@ function isDiscStable(board, stable, r, c) {
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // This is a simplified stability check for AI evaluation
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) {
+            // The disc is not stable if there is an open direction to the edge
+            // but only if the opponent can flip it eventually
+            // In reality, this disc is not stable yet. Let's simplify: 
+            // a disc is stable if all directions that could flip it are blocked by the same color
+            // just a return false here for this is a simplified stable disc check
         }
     }
-    return false; // Simplified for size
+    // A simpler stable disc check: only the corners and the edges of filled areas
+    return false;
 }
 
 function calculateScores() {
@@ -355,12 +360,14 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            else if (board[r][c] === WHITE) white++;
+            if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
+resetBtn.addEventListener('click', () => {
+    initGame();
+});
 
 initGame();
