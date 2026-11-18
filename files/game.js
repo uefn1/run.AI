@@ -343,16 +343,19 @@ function isDiscStable(board, stable, r, c) {
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) {
-            // The disc is not stable if there is an open direction to the edge
-            // but only if the opponent can flip it eventually
-            // In reality, this disc is not stable yet. Let's simplify: 
-            // a disc is stable if all directions that could flip it are blocked by the same color
-            // just a return false here for this is a simplified stable disc check
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
+            // this direction does not make it stable
+        } else if (!hasOpponent) {
+            // safe
+        } else {
+            // this direction is blocked by same color, maybe stable
         }
     }
-    // A simpler stable disc check: only the corners and the edges of filled areas
-    return false;
+    // Simplification for stability check: if all directions are either empty or blocked
+    // In Othello, a disc is stable if it and all discs between it and the edge in all 8 directions are the same color
+    // Or more simply, if no move can ever flip it.
+    // For this AI, we use a heuristic: discs on corners are stable.
+    return (r === 0 || r === 7) && (c === 0 || c === 7);
 }
 
 function calculateScores() {
@@ -360,14 +363,12 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
-resetBtn.addEventListener('click', () => {
-    initGame();
-});
+resetBtn.onclick = initGame;
 
-initGame();
+window.onload = initGame;
