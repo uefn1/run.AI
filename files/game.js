@@ -67,6 +67,8 @@ function renderBoard() {
                 cell.classList.add('hint');
             } else {
                 cell.onclick = () => handleCellClick(r, c);
+            } else {
+                cell.onclick = () => handleCellClick(r, c);
             }
             const piece = document.createElement('div');
             piece.className = 'piece';
@@ -199,9 +201,9 @@ function makeMove(board, r, c, player) {
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
         let cellsToFlip = [];
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
-            cellsToFlip.push({ r: nr, c: nc });
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nr < BOARD_SIZE && board[nr][nc] === opponent) {
             nr += dr; nc += dc;
+            cellsToFlip.push({ r: nr, c: nc });
         }
         if (cellsToFlip.length > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
             for (let cell of cellsToFlip) board[cell.r][cell.c] = player;
@@ -219,8 +221,8 @@ function applyMoveMinimax(board, r, c, player) {
         let nr = r + dr, nc = c + dc;
         let cellsToFlip = [];
         while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
-            cellsToFlip.push({ r: nr, c: nc });
             nr += dr; nc += dc;
+            cellsToFlip.push({ r: nr, c: nc });
         }
         if (cellsToFlip.length > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
             for (let cell of cellsToFlip) board[cell.r][cell.c] = player;
@@ -342,13 +344,16 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
             hasOpponentBetween = true;
         }
-        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === player)) {
-            // If it's a boundary or the same color, this direction is potentially stable but we only care if it's actually flipped
+        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
+            // This direction is not stable unless it's already stable
         }
-        if (!hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) continue;
+        if (!hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
+            // Stable if there's no opponent between and it's edge
+        }
     }
-    // Simpler stability check: if it can't be flipped by opponent, it's stable
-    return !canPlace(board, r, c, opponent);
+    // Simplified stability check: Corner pieces are always stable
+    if ((r === 0 || r === BOARD_SIZE - 1) && (c === 0 || c === BOARD_SIZE - 1)) return true;
+    return false;
 }
 
 function calculateScores() {
@@ -356,12 +361,12 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            else if (board[r][c] === WHITE) white++;
+            if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
-resetBtn.addEventListener('click', initGame);
+resetBtn.onclick = initGame;
 
 initGame();
