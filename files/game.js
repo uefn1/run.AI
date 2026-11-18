@@ -342,14 +342,14 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // This direction is not stable
+            // この方向では安定していない
         } else if (hasOpponentBetween) {
-            // This direction is stable
+            // 安定している可能性あり。ただし全方向チェックが必要
         }
     }
-    // Simple stability: corner or surrounded by stable discs
-    // For this implementation, we focus on basic Othello logic
-    return false; 
+    // 簡易的な安定判定: 周囲に空きがなく、かつ相手が挟めない状態
+    // 本来は再帰的に判定するが、評価用なので簡易的に処理
+    return false;
 }
 
 function calculateScores() {
@@ -363,6 +363,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => initGame();
+resetBtn.onclick = initGame;
 
 initGame();
