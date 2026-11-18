@@ -342,31 +342,13 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // If the line ends without being capped by the same player,
-            // it can potentially be flipped unless all intermediaries are stable.
-            // However, for simplicity in stability check: if it's not capped by player, it's NOT stable in this direction.
+            // This direction doesn't guarantee stability
         } else if (hasOpponentBetween) {
-            // This direction is capped by player
+            // stable in this direction
         }
     }
-    // Simplified stability: a disc is stable if it cannot be flipped by any legal move.
-    // A more accurate check is: if for every direction, either there are no opponent discs, 
-    // or the line is capped by the same player.
-    for (let [dr, dc] of directions) {
-        let nr = r + dr, nc = c + dc;
-        let hasOpponent = false;
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
-            if (board[nr][nc] === EMPTY) break;
-            if (board[nr][nc] === opponent) hasOpponent = true;
-            if (board[nr][nc] === player) {
-                if (!hasOpponent) { /* safe */ }
-                break;
-            }
-            nr += dr; nc += dc;
-        }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) return false;
-    }
-    return true;
+    // Simplified stability check: a disc is stable if it cannot be flipped
+    return !canPlace(board, r, c, opponent); // This is a rough approximation but sufficient for weights
 }
 
 function calculateScores() {
@@ -382,4 +364,4 @@ function calculateScores() {
 
 resetBtn.onclick = initGame;
 
-initGame();
+window.onload = initGame;
