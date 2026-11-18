@@ -343,35 +343,30 @@ function isDiscStable(board, stable, r, c) {
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // This direction does not provide stability
-        } else if (!hasOpponent) {
-            // This direction is already stable
-        } else {
-            // This direction is stable because it ends with player
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
+            // If the line ends or hits empty without finding its own color, it's not stable in this direction
+            // But for the disc to be stable, it must be stable in ALL directions
+        } else if (hasOpponent) {
+            // found own color, this direction is stable
         }
     }
-    // A simplified stability check: a disc is stable if it can't be flipped
-    const moves = getValidMoves(board, opponent);
-    return !moves.some(m => m.r === r && m.c === c) && !canBeFlipped(board, r, c);
-}
-
-function canBeFlipped(board, r, c) {
-    const player = board[r][c];
-    if (player === EMPTY) return false;
-    const opponent = -player;
-    const directions = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
+    // Correct logic for stable: a disc is stable if it can never be flipped.
+    // a disc can be flipped if there is a direction with opponent pieces followed by an empty square.
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
         let hasOpponent = false;
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
+            if (board[nr][nc] === opponent && !stable[nr][nc]) hasOpponent = true;
+            else if (board[nr][nc] === player) break;
+            else if (board[nr][nc] === EMPTY) {
+                if (hasOpponent) return false; // can be flipped
+                break;
+            }
             nr += dr; nc += dc;
         }
-        if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
-            // Potentially flippable
-        }
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) return false;
     }
-    return false; // Default to simplified
+    return true;
 }
 
 function calculateScores() {
@@ -385,6 +380,8 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => initGame();
+resetBtn.onclick = () => {
+    initGame();
+};
 
 initGame();
