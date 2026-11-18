@@ -342,13 +342,17 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
             hasOpponentBetween = true;
         }
-        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // This direction cannot flip this piece, but we need to check if it's actually stable.
-            // A piece is stable if it cannot be flipped in ANY direction.
+        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
+            // If it's an empty space and that space can't be taken by the opponent, it's not yet stable. 
+            // But for simplification, we check if the opponent can eventually take it. 
+            // Actual stability is harder; this is a heuristic.
+        }
+        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) {
+            // Edge reached with opponent in between: this direction is stable
         }
     }
-    // Simplification: a piece is stable if it's a corner or edges that can't be flipped.
-    // Real stable check is complex, for now, returning false unless it's a corner
+    // A piece is truly stable if it's a corner or all directions are blocked by same-color pieces
+    // For the sake of this AI, we'll simplify: corners are always stable
     if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
     return false;
 }
@@ -358,12 +362,11 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            else if (board[r][c] === WHITE) white++;
+            if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
-resetBtn.addEventListener('click', initGame);
-
+resetBtn.onclick = initGame;
 window.onload = initGame;
