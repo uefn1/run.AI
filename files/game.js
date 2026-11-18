@@ -342,15 +342,9 @@ function isDiscStable(board, r, c, stableDiscs) {
             if (board[nr][nc] === opponent) hasOpponentBetween = true;
             nr += dr; nc += dc;
         }
-        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // This direction is stable unless there is a gap we can place a piece in
-            // but the simple logic is: if we hit the wall and we had an opponent, it's not necessarily stable
-            // A disc is stable if it can never be flipped. 
-            // To be flipped, there must be a path of opponent pieces leading to an empty square.
-        }
+        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) return false;
     }
-    // Simplified stability check for minimax performance
-    return false; 
+    return true;
 }
 
 function calculateScores() {
@@ -358,12 +352,11 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
 resetBtn.onclick = initGame;
-
 window.onload = initGame;
