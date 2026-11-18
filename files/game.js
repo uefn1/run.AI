@@ -65,8 +65,9 @@ function renderBoard() {
             cell.className = 'cell';
             if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
+            } else {
+                cell.onclick = () => handleCellClick(r, c);
             }
-            cell.onclick = () => handleCellClick(r, c);
             const piece = document.createElement('div');
             piece.className = 'piece';
             if (board[r][c] === BLACK) piece.classList.add('black');
@@ -341,14 +342,15 @@ function isDiscStable(board, r, c, stableDiscs) {
             if (board[nr][nc] === opponent) hasOpponentBetween = true;
             nr += dr; nc += dc;
         }
-        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // If the line ends or hits an empty/stable space without a friendly piece, it might be unstable
-            // Actually, a piece is stable if it can NEVER be flipped. 
-            // It is stable if in all directions it's either already stable, or the line is blocked by its own color.
+        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
+            // This disc is not stable because it could potentially be flipped
+            // Simplified stability check: if it's on the edge and has no opponent pieces in a direction
+            // However, a full stable disc algorithm is getStableDiscs
         }
-    }
-    // Simplified stability check for Othello AI: a piece is stable if it's a corner or its neighbors are stable
-    return false; // Fallback for simplified logic
+    }    
+    // A disc is stable if it cannot be flipped by the opponent in any direction
+    // For simplicity, this is a simplified version of the return true/false
+    return false;
 }
 
 function calculateScores() {
@@ -362,6 +364,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => initGame();
+resetBtn.addEventListener('click', initGame);
 
 initGame();
