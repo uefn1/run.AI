@@ -342,15 +342,13 @@ function isDiscStable(board, r, c, stableDiscs) {
             if (board[nr][nc] === opponent) hasOpponentBetween = true;
             nr += dr; nc += dc;
         }
-        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
-            // Not stable because it can be flipped
-        } else {
-            // This direction is a candidate for stability
+        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
+            // Note: A disc is stable if there's no way to flip it. 
+            // This is a simplification; a truly stable disc cannot be flipped by any future move.
         }
     }
-    // For simplicity in this minimax implementation, we'll just mark corners as stable immediately
-    if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
-    return false;
+    // Simplified stable check for AI: corners are always stable
+    return (r === 0 || r === BOARD_SIZE - 1) && (c === 0 || c === BOARD_SIZE - 1);
 }
 
 function calculateScores() {
@@ -358,7 +356,7 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
