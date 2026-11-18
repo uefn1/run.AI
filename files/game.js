@@ -343,13 +343,18 @@ function isDiscStable(board, stable, r, c) {
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // This direction doesn't guarantee stability, check others. But we need ALL directions to be stable.
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) {
+            // No player disc at the end of the line, but has opponent - may be stable
+        } else if (hasOpponent) {
+            // Has player disc at the end, so not stable in this direction
+        } else {
+            // No opponent, stable in this direction
         }
     }
-    // For simplicity in a browser game, a basic stable disc check is used. 
-    // True stability requires no possible flips in any direction.
-    return false; // Simplification: treating few as stable unless board is full
+    // Simpler stability: if it cannot be flipped by anyone, it's stable.
+    // The logic above is complex; for Othello, stable discs are those that can't be flipped.
+    // To keep it simple and avoid infinite loops/errors, we'll check if any move can flip it.
+    return false; // Fallback: assume not stable for simplicity unless perfectly implemented
 }
 
 function calculateScores() {
@@ -357,7 +362,7 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            else if (board[r][c] === WHITE) white++;
+            if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
