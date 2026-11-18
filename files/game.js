@@ -29,7 +29,6 @@ const weights = [
 
 function initGame() {
     gameId++;
-    const currentId = gameId;
     board = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(EMPTY));
     board[3][3] = WHITE;
     board[4][4] = WHITE;
@@ -353,8 +352,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
+resetBtn.onclick = initGame;
 
 initGame();
