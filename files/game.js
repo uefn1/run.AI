@@ -343,17 +343,30 @@ function isDiscStable(board, r, c, stableDiscs) {
             hasOpponentBetween = true;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // If it's an empty space and that space can't be taken by the opponent, it's not yet stable. 
-            // But for simplification, we check if the opponent can eventually take it. 
-            // Actual stability is harder; this is a heuristic.
+            // If there's an opponent but no anchor, it's not yet stable, but we check if it's truly stable
+            // Actually, if there's ANY direction where it can be flipped, it's not stable.
+            // However, for stability, it must be unflippable in ALL directions.
         }
-        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) {
-            // Edge reached with opponent in between: this direction is stable
+        if (hasOpponentBetween && (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent)) {
+            // can't happen due to while loop
         }
     }
-    // A piece is truly stable if it's a corner or all directions are blocked by same-color pieces
-    // For the sake of this AI, we'll simplify: corners are always stable
-    if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
+    // A simpler check: can this piece be flipped by the opponent?
+    return !canPlace(board, r, c, opponent) && !canFlip(board, r, c, opponent);
+}
+
+function canFlip(board, r, c, player) {
+    const opponent = -player;
+    const directions = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
+    for (let [dr, dc] of directions) {
+        let nr = r + dr, nc = c + dc;
+        let hasOpponentBetween = false;
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
+            nr += dr; nc += dc;
+            hasOpponentBetween = true;
+        }
+        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) return true;
+    }
     return false;
 }
 
@@ -368,5 +381,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
-window.onload = initGame;
+resetBtn.onclick = () => initGame();
+
+initGame();
