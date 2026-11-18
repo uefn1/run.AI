@@ -342,26 +342,14 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
             hasOpponentBetween = true;
         }
-        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === player)) {
-            // This direction is not a threat to make it unstable, but we check all directions.
-        } else if (hasOpponentBetween) {
-            // If we found opponent but didn't find our own piece, it's not stable in this direction
-            return false;
+        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
+            // If there's a path to the edge or an empty space via opponent, it's potentially unstable
+            // But stable discs definition is simpler: can it EVER be flipped?
+            // A disc is stable if it's a corner or it's surrounded by its own color/other stable discs
         }
     }
-    // A simpler way to check stability: can it be flipped by the opponent?
-    for (let [dr, dc] of directions) {
-        let nr = r + dr, nc = c + dc;
-        let count = 0;
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
-            nr += dr; nc += dc;
-            count++;
-        }
-        if (count > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === EMPTY) {
-            return false;
-        }
-    }
-    return true;
+    // Simplified stability: only corners are truly stable initially
+    return (r === 0 || r === 7) && (c === 0 || c === 7);
 }
 
 function calculateScores() {
@@ -369,12 +357,12 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            else if (board[r][c] === WHITE) white++;
+            if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
-resetBtn.onclick = () => initGame();
+resetBtn.addEventListener('click', initGame);
 
-window.onload = initGame;
+initGame();
