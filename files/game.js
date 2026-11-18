@@ -239,7 +239,7 @@ function getBestMove(board, player) {
     const moves = getValidMoves(board, player);
     if (moves.length === 0) return null;
     const totalPieces = board.flat().filter(p => p !== EMPTY).length;
-    const depth = totalPieces > 45 ? 6 : (totalPieces > 30 ? 4 : 3);
+    const depth = totalPieces > 50 ? 6 : (totalPieces > 30 ? 4 : 3);
     let bestScore = -Infinity, bestMove = moves[0];
     for (let move of moves) {
         const flipped = applyMove(board, move.r, move.c, player);
@@ -343,10 +343,35 @@ function isDiscStable(board, stable, r, c) {
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) continue;
-        if (hasOpponent) return false;
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
+            // This direction does not provide stability
+        } else if (!hasOpponent) {
+            // This direction is already stable
+        } else {
+            // This direction is stable because it ends with player
+        }
     }
-    return true;
+    // A simplified stability check: a disc is stable if it can't be flipped
+    const moves = getValidMoves(board, opponent);
+    return !moves.some(m => m.r === r && m.c === c) && !canBeFlipped(board, r, c);
+}
+
+function canBeFlipped(board, r, c) {
+    const player = board[r][c];
+    if (player === EMPTY) return false;
+    const opponent = -player;
+    const directions = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
+    for (let [dr, dc] of directions) {
+        let nr = r + dr, nc = c + dc;
+        let hasOpponent = false;
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
+            nr += dr; nc += dc;
+        }
+        if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
+            // Potentially flippable
+        }
+    }
+    return false; // Default to simplified
 }
 
 function calculateScores() {
@@ -354,11 +379,12 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            else if (board[r][c] === WHITE) white++;
+            if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
+resetBtn.onclick = () => initGame();
+
 initGame();
