@@ -85,11 +85,13 @@ function handleCellClick(r, c) {
         updateStatus();
         renderBoard();
         setTimeout(() => {
-            if (isGameOver || currentPlayer !== WHITE) return;
-            if (canMove(board, WHITE)) {
-                startAiTurn();
-            } else {
-                checkPass(WHITE);
+            if (isGameOver) return;
+            if (currentPlayer === WHITE) {
+                if (canMove(board, WHITE)) {
+                    startAiTurn();
+                } else {
+                    checkPass(WHITE);
+                }
             }
         }, 600);
     }
@@ -348,8 +350,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
+resetBtn.onclick = initGame;
 
 initGame();

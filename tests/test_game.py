@@ -33,7 +33,6 @@ def test_othello():
         page.wait_for_selector("text=あなたの番です (黒)", timeout=15000)
         
         # Score Change
-        black_score = int(page.inner_text("#black-score")),
         black_score = int(page.inner_text("#black-score"))
         white_score = int(page.inner_text("#white-score"))
         assert black_score + white_score > 4
