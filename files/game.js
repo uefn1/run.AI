@@ -343,13 +343,11 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // The disc is stable if there's no way to flip it in this direction
-            // This simplified logic for stability is acceptable for the AI's heuristics
+            // This logic is for identifying stability - if it can't be flipped by the opponent
         }
     }
-    // In Othello, a disc is stable if it and all discs behind it cannot be flipped
-    // For simplicity in this AI, we assume corner pieces are stable
-    if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
+    // Simpler stability check: corners are always stable
+    if ((r === 0 || r === BOARD_SIZE - 1) && (c === 0 || c === BOARD_SIZE - 1)) return true;
     return false;
 }
 
@@ -358,11 +356,12 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
 resetBtn.onclick = initGame;
-initGame();
+
+window.onload = initGame;
