@@ -342,15 +342,13 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // This direction is not stable if there is an opponent and no friend at the end
-            // Wait, the actual logic is: a disc is stable if for all directions, it's either
-            // at the edge, or followed by a friend, or followed by stable discs then a friend.
-            // Actually, a simpler way is to check if it CAN be flipped.
+            // If it's not blocked by a piece of its own color, it's potentially unstable.
+            // But the logic here is: a disc is stable if it cannot be flipped.
+            // It can be flipped if there's a line of opponents ending in an empty square or a stable disc.
         }
     }
-    // Simplified stability: a piece is stable if it's a corner or adjacent to a stable piece of same color
-    // But the most accurate is checking if any opponent can possibly flip it.
-    return false; // For simplicity and speed in this context, the weight map handles most of it
+    // Simplified stability for AI: only treat corners as stable for base logic.
+    return (r === 0 || r === 7) && (c === 0 || c === 7);
 }
 
 function calculateScores() {
@@ -365,5 +363,4 @@ function calculateScores() {
 }
 
 resetBtn.onclick = initGame;
-
 initGame();
