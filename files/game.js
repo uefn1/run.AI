@@ -342,28 +342,12 @@ function isDiscStable(board, r, c, stableDiscs) {
             if (board[nr][nc] === opponent) hasOpponentBetween = true;
             nr += dr; nc += dc;
         }
-        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // This direction doesn't prove it's unstable. But to be unstable, we need to be able to flip it.
-            // A disc is stable if it cannot be flipped in any direction.
-        }
-        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
-             // not possible per while condition
+        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
+            // This disc can still be flipped
+            return false;
         }
     }
-    // Correct logic: a disc is stable if it cannot be flipped by the opponent
-    for (let [dr, dc] of directions) {
-        let nr = r + dr, nc = c + dc;
-        let hasOpponentBetween = false;
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && (board[nr][nc] === opponent || stableDiscs[nr][nc])) {
-            if (board[nr][nc] === opponent) hasOpponentBetween = true;
-            nr += dr; nc += dc;
-        }
-        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
-            // Not actually possible with the while loop logic
-        }
-        // If it can be flipped, it's not stable
-        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) return false;
-    }
+    // No direction allows this disc to be flipped
     return true;
 }
 
@@ -372,11 +356,12 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
 resetBtn.onclick = initGame;
-initGame();
+
+window.onload = initGame;
