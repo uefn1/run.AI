@@ -65,11 +65,8 @@ function renderBoard() {
             cell.className = 'cell';
             if (validMoves.some(m => m.r === r && m.c === c)) {
                 cell.classList.add('hint');
-            } else {
-                cell.onclick = () => handleCellClick(r, c);
-            } else {
-                cell.onclick = () => handleCellClick(r, c);
             }
+            cell.onclick = () => handleCellClick(r, c);
             const piece = document.createElement('div');
             piece.className = 'piece';
             if (board[r][c] === BLACK) piece.classList.add('black');
@@ -201,9 +198,9 @@ function makeMove(board, r, c, player) {
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
         let cellsToFlip = [];
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nr < BOARD_SIZE && board[nr][nc] === opponent) {
-            nr += dr; nc += dc;
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
             cellsToFlip.push({ r: nr, c: nc });
+            nr += dr; nc += dc;
         }
         if (cellsToFlip.length > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
             for (let cell of cellsToFlip) board[cell.r][cell.c] = player;
@@ -221,8 +218,8 @@ function applyMoveMinimax(board, r, c, player) {
         let nr = r + dr, nc = c + dc;
         let cellsToFlip = [];
         while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
-            nr += dr; nc += dc;
             cellsToFlip.push({ r: nr, c: nc });
+            nr += dr; nc += dc;
         }
         if (cellsToFlip.length > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
             for (let cell of cellsToFlip) board[cell.r][cell.c] = player;
@@ -340,20 +337,15 @@ function isDiscStable(board, r, c, stableDiscs) {
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
         let hasOpponentBetween = false;
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && (board[nr][nc] === opponent || stableDiscs[nr][nc])) {
+            if (board[nr][nc] === opponent) hasOpponentBetween = true;
             nr += dr; nc += dc;
-            hasOpponentBetween = true;
         }
-        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // This direction is not stable unless it's already stable
-        }
-        if (!hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // Stable if there's no opponent between and it's edge
+        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
+            return false;
         }
     }
-    // Simplified stability check: Corner pieces are always stable
-    if ((r === 0 || r === BOARD_SIZE - 1) && (c === 0 || c === BOARD_SIZE - 1)) return true;
-    return false;
+    return true;
 }
 
 function calculateScores() {
@@ -368,5 +360,4 @@ function calculateScores() {
 }
 
 resetBtn.onclick = initGame;
-
 initGame();
