@@ -210,25 +210,6 @@ function makeMove(board, r, c, player) {
     return true;
 }
 
-function applyMove(board, r, c, player) {
-    const opponent = -player;
-    const flipped = [];
-    board[r][c] = player;
-    const directions = [[-1,-1], [-1,0], [-1,1], [0,1], [0,-1], [1,-1], [1,0], [1,1]];
-    for (let [dr, dc] of directions) {
-        let nr = r + dr, nc = c + dc;
-        let cellsToFlip = [];
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nr < BOARD_SIZE && board[nr][nc] === opponent) {
-            // This loop is slightly wrong in the logic but actually correct for a simple applyMove
-            // Correcting the logic to match makeMove
-        }
-    }
-    // The provided applyMove in the prompt was truncated or had errors. 
-    // Re-implementing based on makeMove logic to be used in minimax
-    return flipped;
-}
-
-// Overriding applyMove and undoMove for minimax to work correctly
 function applyMoveMinimax(board, r, c, player) {
     const opponent = -player;
     const flipped = [];
@@ -339,8 +320,8 @@ function getStableDiscs(board) {
         changed = false;
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
-                if (board[r][c] === EMPTY || stableDiscs[r][c] === true) continue;
-                if (isDiscStable(board, stableDiscs, r, c)) {
+                if (board[r][c] === EMPTY || stableDiscs[r][c]) continue;
+                if (isDiscStable(board, r, c, stableDiscs)) {
                     stableDiscs[r][c] = true;
                     changed = true;
                 }
@@ -350,26 +331,25 @@ function getStableDiscs(board) {
     return stableDiscs;
 }
 
-function isDiscStable(board, stable, r, c) {
+function isDiscStable(board, r, c, stableDiscs) {
     const player = board[r][c];
     const opponent = -player;
     const directions = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
     for (let [dr, dc] of directions) {
         let nr = r + dr, nc = c + dc;
-        let hasOpponent = false;
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
-            if (board[nr][nc] === opponent && !stable[nr][nc]) hasOpponent = true;
-            if (board[nr][nc] === player) break;
+        let hasOpponentBetween = false;
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) {
             nr += dr; nc += dc;
+            hasOpponentBetween = true;
         }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) {
-            // If we reached the edge of the board without hitting a player's own piece
-            // This is a bit simple, a bit too unstable. But we stabilitéy check is getStableDiscs up навіда//
+        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
+            return false;
         }
-        // Fixed a logic error in the stability check: A disc is stable if it cannot be flipped by the opponent.
+        if (hasOpponentBetween && board[nr][nc] === player && !stableDiscs[nr][nc]) {
+            return false;
+        }
     }
-    // Simplified stability check for Minimax evaluation
-    return false; 
+    return true;
 }
 
 function calculateScores() {
@@ -377,14 +357,12 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
+resetBtn.onclick = initGame;
 
 initGame();
