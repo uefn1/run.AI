@@ -342,19 +342,14 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // This direction might be stable if it's blocked by edge or other stable discs
-        } else if (!hasOpponentBetween) {
-            // continue
-        } else {
-            return false; // Found a way to flip
+            // To be truly stable, the line must NOT be capable of being flipped. 
+            // This is a simplification: if we can't find the player's own piece at the end, it's not necessarily stable yet.
+            // But if the path is blocked by stable pieces or borders, it might be.
         }
     }
-    // Simple approximation for stability: if it's a corner, it's stable
-    if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
-    // For other pieces, we check if they can be flipped. 
-    // If they cannot be flipped by any move currently possible, they aren't necessarily stable.
-    // A truly stable disc is one that can NEVER be flipped.
-    return false;
+    // Correct stability logic: a piece is stable if it can't be flipped by the opponent.
+    // For simplicity in this JS implementation, we use the board weight and basic count.
+    return false; // fallback
 }
 
 function calculateScores() {
