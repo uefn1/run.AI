@@ -342,10 +342,21 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // If there is an opponent but no player disc at the end of this direction, it might be flip-able
-            // However, true stability means NO direction can flip it. 
-            // The logic here is simplified: if it can be flipped in any direction, it's not stable.
-            return false;
+            // If we hit a boundary or another piece and it's not our own, it might be unstable
+            // However, stable means it can NEVER be flipped.
+            // The simple condition: it's stable if no direction can possibly flip it.
+        }
+    }
+    // Correct stable disc logic: a disc is stable if for all directions, it cannot be flipped.
+    for (let [dr, dc] of directions) {
+        let nr = r + dr, nc = c + dc;
+        let hasOpponentBetween = false;
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && (board[nr][nc] === opponent || stableDiscs[nr][nc])) {
+            if (board[nr][nc] === opponent) hasOpponentBetween = true;
+            nr += dr; nc += dc;
+        }
+        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
+            return false; // can be flipped
         }
     }
     return true;
@@ -362,5 +373,8 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
+resetBtn.onclick = () => {
+    initGame();
+};
+
 initGame();
