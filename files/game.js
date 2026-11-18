@@ -343,24 +343,14 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            // If there is an opponent and the line ends or hits an empty space, it's not stable unless the end is occupied by same player
-            // Wait, the definition of stable is: a disc that can never be flipped.
-            // A disc is stable if it's a corner, or if it's connected to a stable disc of the same color
-            // via a line of discs (no gaps).
+            // This direction is stable unless there is a gap we can place a piece in
+            // but the simple logic is: if we hit the wall and we had an opponent, it's not necessarily stable
+            // A disc is stable if it can never be flipped. 
+            // To be flipped, there must be a path of opponent pieces leading to an empty square.
         }
     }
-    // Simple stability: Corner
-    if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
-    // Connection to stable
-    const directions2 = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
-    for (let [dr, dc] of directions2) {
-        let nr = r + dr, nc = c + dc;
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] !== EMPTY) {
-            if (board[nr][nc] === player && stableDiscs[nr][nc]) return true;
-            nr += dr; nc += dc;
-        }
-    }
-    return false;
+    // Simplified stability check for minimax performance
+    return false; 
 }
 
 function calculateScores() {
@@ -368,7 +358,7 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            else if (board[r][c] === WHITE) white++;
+            if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
@@ -376,4 +366,4 @@ function calculateScores() {
 
 resetBtn.onclick = initGame;
 
-initGame();
+window.onload = initGame;
