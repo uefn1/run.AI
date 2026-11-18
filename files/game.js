@@ -350,9 +350,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    isAiThinking = false;
-    initGame();
-};
+resetBtn.onclick = initGame;
 
 initGame();
