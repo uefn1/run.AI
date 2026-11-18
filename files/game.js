@@ -342,21 +342,10 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // Not stable in this direction if it can be flipped
+            // This direction does not allow flipping, but we need to check if the disc is truly stable in ALL directions
         } else if (hasOpponentBetween) {
-            // Stable in this direction
+            return false; // Can be flipped in this direction
         }
-    }
-    // Simplified stability: if no direction allows flipping, it's stable
-    for (let [dr, dc] of directions) {
-        let nr = r + dr, nc = c + dc;
-        let hasOpponentBetween = false;
-        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && (board[nr][nc] === opponent || stableDiscs[nr][nc])) {
-            if (board[nr][nc] === opponent) hasOpponentBetween = true;
-            nr += dr; nc += dc;
-        }
-        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === opponent) return false;
-        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) return false;
     }
     return true;
 }
@@ -373,4 +362,5 @@ function calculateScores() {
 }
 
 resetBtn.onclick = initGame;
+
 initGame();
