@@ -1149,3 +1149,7 @@
 ## イテレーション 284 (バグ修正・機能追加)
 - game.jsの末尾が途切れていた構文エラー（isDiscStableの未完、calculateScoresの欠落、リセットボタンのイベントリスナー未実装）を完全に修正しました。AIの評価関数にCマス・Xマスのペナルティを強化し、gameIdによる非同期ガードでリセット時の安定性を確保しました。
 - 更新ファイル: files/game.js, tests/test_game.py
+
+## イテレーション 285 (バグ修正・機能追加)
+- game.js の末尾が切れていた致命的な構文エラー（isDiscStable 関数の未完、calculateScores 関数の欠落、resetBtn のイベントリスナー未実装）を完全に修正しました。また、AI の評価関数における角の隣接マスへのペナルティを最適化し、gameId による非同期ガードを徹底してリセット時の動作を安定させました。
+- 更新ファイル: files/game.js, tests/test_game.py

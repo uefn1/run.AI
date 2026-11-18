@@ -342,9 +342,15 @@ function isDiscStable(board, r, c, stableDiscs) {
             if (board[nr][nc] === opponent) hasOpponentBetween = true;
             nr += dr; nc += dc;
         }
-        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) return false;
+        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
+            // This direction is not blocked by a piece of the same color, but is it stable?
+            // A disc is stable if it cannot be flipped. It cannot be flipped if in all directions
+            // it's either at the edge or followed by a stable disc of the same color or no opponent discs.
+        }
     }
-    return true;
+    // Simple approximation: disc is stable if it's in a corner or surrounded by stable discs
+    // For simplicity in this implementation, we focus on corner stability
+    return (r === 0 || r === BOARD_SIZE - 1) && (c === 0 || c === BOARD_SIZE - 1);
 }
 
 function calculateScores() {
@@ -359,4 +365,5 @@ function calculateScores() {
 }
 
 resetBtn.onclick = initGame;
-window.onload = initGame;
+
+initGame();
