@@ -342,12 +342,19 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
         }
         if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
-            // This direction does not allow flipping, but we need to check if the disc is truly stable in ALL directions
-        } else if (hasOpponentBetween) {
-            return false; // Can be flipped in this direction
+            // This direction might be stable if it's blocked by edge or other stable discs
+        } else if (!hasOpponentBetween) {
+            // continue
+        } else {
+            return false; // Found a way to flip
         }
     }
-    return true;
+    // Simple approximation for stability: if it's a corner, it's stable
+    if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
+    // For other pieces, we check if they can be flipped. 
+    // If they cannot be flipped by any move currently possible, they aren't necessarily stable.
+    // A truly stable disc is one that can NEVER be flipped.
+    return false;
 }
 
 function calculateScores() {
