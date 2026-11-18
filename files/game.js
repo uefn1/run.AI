@@ -343,8 +343,9 @@ function isDiscStable(board, stable, r, c) {
             if (board[nr][nc] === player) break;
             nr += dr; nc += dc;
         }
-        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE)) continue; 
-        if (hasOpponent) return false;
+        if (hasOpponent && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
+            return false;
+        }
     }
     return true;
 }
@@ -360,8 +361,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = () => {
-    initGame();
-};
+resetBtn.onclick = initGame;
 
 initGame();
