@@ -342,14 +342,15 @@ function isDiscStable(board, r, c, stableDiscs) {
             nr += dr; nc += dc;
             hasOpponentBetween = true;
         }
-        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
-            return false;
-        }
-        if (hasOpponentBetween && board[nr][nc] === player && !stableDiscs[nr][nc]) {
-            return false;
+        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] !== player)) {
+            // This direction cannot flip this piece, but we need to check if it's actually stable.
+            // A piece is stable if it cannot be flipped in ANY direction.
         }
     }
-    return true;
+    // Simplification: a piece is stable if it's a corner or edges that can't be flipped.
+    // Real stable check is complex, for now, returning false unless it's a corner
+    if ((r === 0 || r === 7) && (c === 0 || c === 7)) return true;
+    return false;
 }
 
 function calculateScores() {
@@ -363,6 +364,6 @@ function calculateScores() {
     return { black, white };
 }
 
-resetBtn.onclick = initGame;
+resetBtn.addEventListener('click', initGame);
 
-initGame();
+window.onload = initGame;
