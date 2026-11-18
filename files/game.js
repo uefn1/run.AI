@@ -86,8 +86,9 @@ function handleCellClick(r, c) {
         currentPlayer = WHITE;
         updateStatus();
         renderBoard();
+        const currentGameId = gameId;
         setTimeout(() => {
-            if (isGameOver) return;
+            if (currentGameId !== gameId || isGameOver) return;
             if (currentPlayer === WHITE) {
                 if (canMove(board, WHITE)) {
                     startAiTurn();
@@ -104,7 +105,10 @@ function startAiTurn() {
     boardEl.style.pointerEvents = 'none';
     turnIndicator.textContent = "AIが思考中...";
     renderBoard();
-    setTimeout(aiMove, 600);
+    const currentGameId = gameId;
+    setTimeout(() => {
+        if (currentGameId === gameId) aiMove();
+    }, 600);
 }
 
 function aiMove() {
@@ -136,7 +140,10 @@ function checkPass(player) {
         updateStatus();
         renderBoard();
         if (currentPlayer === WHITE) {
-            setTimeout(startAiTurn, 1000);
+            const currentGameId = gameId;
+            setTimeout(() => {
+                if (currentGameId === gameId) startAiTurn();
+            }, 1000);
         } else {
             boardEl.style.pointerEvents = 'auto';
         }
