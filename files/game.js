@@ -341,11 +341,13 @@ function isDiscStable(board, r, c, stableDiscs) {
             if (board[nr][nc] === opponent) hasOpponentBetween = true;
             nr += dr; nc += dc;
         }
-        if (hasOpponentBetween && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && board[nr][nc] === player) {
-            return false;
+        if (hasOpponentBetween && (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE || board[nr][nc] === EMPTY)) {
+            // This direction is not actually stable unless it's blocked by a stable disc or board edge
+            // but the standard stable disc definition means it can't be flipped
         }
     }
-    return true;
+    // Simplified stability check: for now, only corners are naturally stable
+    return (r === 0 || r === 7) && (c === 0 || c === 7);
 }
 
 function calculateScores() {
@@ -353,11 +355,12 @@ function calculateScores() {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[r][c] === BLACK) black++;
-            if (board[r][c] === WHITE) white++;
+            else if (board[r][c] === WHITE) white++;
         }
     }
     return { black, white };
 }
 
 resetBtn.onclick = initGame;
-initGame();
+
+window.onload = initGame;
